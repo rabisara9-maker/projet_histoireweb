@@ -29,18 +29,23 @@ function ecrireEtatPartage($etat) {
     file_put_contents($sharedFile, json_encode($etat));
 }
 
+$defaultEtat = [
+    'manche' => 1,
+    'score_joueur1' => 0,
+    'score_joueur2' => 0,
+    'questions_manches' => [],
+    'theme_manche' => null,
+    'question_actuelle' => 0,
+    'reponses' => [],
+    'start_time' => time() + 5
+];
+
 $etat = lireEtatPartage();
 if (empty($etat)) {
-    $etat = [
-        'manche' => 1,
-        'score_joueur1' => 0,
-        'score_joueur2' => 0,
-        'questions_manches' => [],
-        'theme_manche' => null,
-        'question_actuelle' => 0,
-        'reponses' => [],
-        'start_time' => time() + 5  // Démarre dans 5 secondes
-    ];
+    $etat = $defaultEtat;
+} else {
+    // Ensure all required keys exist
+    $etat = array_merge($defaultEtat, $etat);
 }
 
 // Lire les questions depuis le JSON
@@ -80,7 +85,7 @@ function melangerOptions($question) {
 }
 
 // Initialiser les questions si nouvelle manche
-$manche = $etat['manche'];
+$manche = $etat['manche'] ?? 1;
 if (!isset($etat['questions_manches'][$manche])) {
     $themeChoisi = choisirThemeAleatoire($themes);
     $etat['theme_manche'] = $themeChoisi;
@@ -95,8 +100,8 @@ if (!isset($etat['questions_manches'][$manche])) {
 }
 
 // Afficher la question actuelle
-$questionIndex = $etat['question_actuelle'];
-$questionsManche = $etat['questions_manches'][$manche];
+$questionIndex = $etat['question_actuelle'] ?? 0;
+$questionsManche = $etat['questions_manches'][$manche] ?? [];
 
 if ($questionIndex >= count($questionsManche)) {
     // Toutes les questions répondues, passer à la manche suivante
@@ -113,16 +118,16 @@ if ($questionIndex >= count($questionsManche)) {
     }
 }
 
-$currentQuestion = $questionsManche[$questionIndex];
-$theme = $etat['theme_manche'];
+$currentQuestion = $questionsManche[$questionIndex] ?? [];
+$theme = $etat['theme_manche'] ?? 'Thème';
 
 // Identifier le joueur
 $joueur = ($roomData['joueur1'] == $_SESSION['username']) ? 'joueur1' : 'joueur2';
 $joueurAdverse = ($joueur == 'joueur1') ? 'joueur2' : 'joueur1';
-$nomJoueur = $roomData[$joueur];
-$nomAdverse = $roomData[$joueurAdverse];
-$scoreJoueur = $etat['score_' . $joueur];
-$scoreAdverse = $etat['score_' . $joueurAdverse];
+$nomJoueur = $roomData[$joueur] ?? 'Joueur';
+$nomAdverse = $roomData[$joueurAdverse] ?? 'Adversaire';
+$scoreJoueur = $etat['score_' . $joueur] ?? 0;
+$scoreAdverse = $etat['score_' . $joueurAdverse] ?? 0;
 
 // Timer JavaScript (30 secondes) - seulement si pas déjà répondu
 $timerScript = '';

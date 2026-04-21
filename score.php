@@ -25,15 +25,15 @@ function lireEtatPartage() {
 }
 
 $etat = lireEtatPartage();
-if ($etat['manche'] < 3) {
+if (($etat['manche'] ?? 1) < 3) {
     header("Location: quiz.php");
     exit();
 }
 
 $joueur1 = $roomData['joueur1'];
 $joueur2 = $roomData['joueur2'];
-$score1 = $etat['score_joueur1'];
-$score2 = $etat['score_joueur2'];
+$score1 = $etat['score_joueur1'] ?? 0;
+$score2 = $etat['score_joueur2'] ?? 0;
 
 // Déterminer le gagnant
 $gagnant = ($score1 > $score2) ? $joueur1 : (($score2 > $score1) ? $joueur2 : 'Égalité');
