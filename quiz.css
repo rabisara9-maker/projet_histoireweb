@@ -162,6 +162,18 @@ body {
   transform: translateY(-1px);
 }
 
+.answer-btn.selected {
+  background: #22c55e;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.answer-btn.selected {
+  background: #22c55e;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
 .action-box {
   text-align: center;
   margin-top: 24px;
