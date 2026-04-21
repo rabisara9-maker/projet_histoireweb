@@ -1,0 +1,434 @@
+[
+  {
+    "theme": "Antiquité",
+    "question": "Quel pharaon a fait construire la Grande Pyramide de Gizeh ?",
+    "a": "Khéops",
+    "b": "Ramsès II",
+    "c": "Thoutmosis III",
+    "correct": "A"
+  },
+  {
+    "theme": "Antiquité",
+    "question": "Quelle cité-état grecque était connue pour ses guerriers redoutables ?",
+    "a": "Sparte",
+    "b": "Athènes",
+    "c": "Corinthe",
+    "correct": "A"
+  },
+  {
+    "theme": "Antiquité",
+    "question": "Quel général carthaginois a traversé les Alpes avec des éléphants pour attaquer Rome ?",
+    "a": "Hannibal",
+    "b": "Hamilcar",
+    "c": "Hasdrubal",
+    "correct": "A"
+  },
+  {
+    "theme": "Antiquité",
+    "question": "Dans quelle ville se trouve le Colisée ?",
+    "a": "Rome",
+    "b": "Athènes",
+    "c": "Naples",
+    "correct": "A"
+  },
+  {
+    "theme": "Antiquité",
+    "question": "À qui attribue-t-on l'Iliade et l'Odyssée ?",
+    "a": "Homère",
+    "b": "Hésiode",
+    "c": "Eschyle",
+    "correct": "A"
+  },
+  {
+    "theme": "Antiquité",
+    "question": "Qui a fondé l'Empire romain en devenant son premier empereur ?",
+    "a": "Auguste",
+    "b": "Jules César",
+    "c": "Tibère",
+    "correct": "A"
+  },
+  {
+    "theme": "Antiquité",
+    "question": "Quelle école philosophique grecque prônait la maîtrise des passions ?",
+    "a": "Le stoïcisme",
+    "b": "L'épicurisme",
+    "c": "Le scepticisme",
+    "correct": "A"
+  },
+  {
+    "theme": "Antiquité",
+    "question": "Quel sénateur romain est célèbre pour avoir participé à l'assassinat de Jules César ?",
+    "a": "Brutus",
+    "b": "Pompée",
+    "c": "Cicéron",
+    "correct": "A"
+  },
+  {
+    "theme": "Antiquité",
+    "question": "Dans quelle civilisation les premiers Jeux Olympiques ont-ils eu lieu ?",
+    "a": "La Grèce antique",
+    "b": "L'Empire romain",
+    "c": "L'Égypte antique",
+    "correct": "A"
+  },
+  {
+    "theme": "Antiquité",
+    "question": "Quelle est la principale langue utilisée dans les écrits officiels de l'Empire romain ?",
+    "a": "Le latin",
+    "b": "Le grec",
+    "c": "L'araméen",
+    "correct": "A"
+  },
+  {
+    "theme": "Moyen Âge",
+    "question": "Qui a été couronné empereur d'Occident par le pape Léon III en 800 ?",
+    "a": "Charlemagne",
+    "b": "Clovis",
+    "c": "Charles Martel",
+    "correct": "A"
+  },
+  {
+    "theme": "Moyen Âge",
+    "question": "En quelle année Guillaume le Conquérant a-t-il vaincu Harold II à la bataille d'Hastings ?",
+    "a": "1066",
+    "b": "1095",
+    "c": "1215",
+    "correct": "A"
+  },
+  {
+    "theme": "Moyen Âge",
+    "question": "Combien d'années environ a duré la Guerre de Cent Ans entre la France et l'Angleterre ?",
+    "a": "116 ans",
+    "b": "50 ans",
+    "c": "80 ans",
+    "correct": "A"
+  },
+  {
+    "theme": "Moyen Âge",
+    "question": "Qui a fondé l'ordre des Templiers au XIIe siècle ?",
+    "a": "Hugues de Payens",
+    "b": "Bernard de Clairvaux",
+    "c": "Godefroy de Bouillon",
+    "correct": "A"
+  },
+  {
+    "theme": "Moyen Âge",
+    "question": "Qu'est-ce que la Magna Carta, signée en 1215 ?",
+    "a": "Une charte limitant le pouvoir du roi d'Angleterre",
+    "b": "Un traité de paix entre la France et l'Angleterre",
+    "c": "Un code de lois carolingien",
+    "correct": "A"
+  },
+  {
+    "theme": "Moyen Âge",
+    "question": "Quel surnom portait le roi d'Angleterre Richard Ier ?",
+    "a": "Cœur de Lion",
+    "b": "Le Bref",
+    "c": "Le Grand",
+    "correct": "A"
+  },
+  {
+    "theme": "Moyen Âge",
+    "question": "Quel fléau a ravagé l'Europe au XIVe siècle, tuant environ un tiers de la population ?",
+    "a": "La Peste Noire",
+    "b": "La variole",
+    "c": "La lèpre",
+    "correct": "A"
+  },
+  {
+    "theme": "Moyen Âge",
+    "question": "Quelle ville française Jeanne d'Arc a-t-elle contribué à libérer du siège anglais en 1429 ?",
+    "a": "Orléans",
+    "b": "Paris",
+    "c": "Reims",
+    "correct": "A"
+  },
+  {
+    "theme": "Moyen Âge",
+    "question": "Qui a fondé la dynastie capétienne en France ?",
+    "a": "Hugues Capet",
+    "b": "Louis VI",
+    "c": "Robert II",
+    "correct": "A"
+  },
+  {
+    "theme": "Moyen Âge",
+    "question": "Quel empire islamique a conquis Constantinople en 1453, mettant fin à l'Empire byzantin ?",
+    "a": "L'Empire ottoman",
+    "b": "L'Empire abbasside",
+    "c": "L'Empire seldjoukide",
+    "correct": "A"
+  },
+  {
+    "theme": "Grandes découvertes",
+    "question": "En quelle année Christophe Colomb a-t-il débarqué en Amérique pour la première fois ?",
+    "a": "1492",
+    "b": "1498",
+    "c": "1502",
+    "correct": "A"
+  },
+  {
+    "theme": "Grandes découvertes",
+    "question": "Quel explorateur portugais a contourné le cap de Bonne-Espérance pour atteindre l'Inde ?",
+    "a": "Vasco de Gama",
+    "b": "Ferdinand Magellan",
+    "c": "Bartolomeu Dias",
+    "correct": "A"
+  },
+  {
+    "theme": "Grandes découvertes",
+    "question": "Qui a réalisé la première circumnavigation du globe, même si il est mort en route ?",
+    "a": "Ferdinand Magellan",
+    "b": "Juan Sebastián Elcano",
+    "c": "Amerigo Vespucci",
+    "correct": "A"
+  },
+  {
+    "theme": "Grandes découvertes",
+    "question": "Quel continent a donné son nom à Amerigo Vespucci ?",
+    "a": "L'Amérique",
+    "b": "L'Afrique",
+    "c": "L'Australie",
+    "correct": "A"
+  },
+  {
+    "theme": "Grandes découvertes",
+    "question": "Quelle nation a financé le voyage de Christophe Colomb en 1492 ?",
+    "a": "L'Espagne",
+    "b": "Le Portugal",
+    "c": "L'Angleterre",
+    "correct": "A"
+  },
+  {
+    "theme": "Grandes découvertes",
+    "question": "Quel explorateur français a remonté le fleuve Saint-Laurent et pris possession du Canada au nom de la France ?",
+    "a": "Jacques Cartier",
+    "b": "Samuel de Champlain",
+    "c": "Jean Cabot",
+    "correct": "A"
+  },
+  {
+    "theme": "Grandes découvertes",
+    "question": "En quelle année Vasco de Gama a-t-il atteint les côtes de l'Inde ?",
+    "a": "1498",
+    "b": "1492",
+    "c": "1519",
+    "correct": "A"
+  },
+  {
+    "theme": "Grandes découvertes",
+    "question": "Quel conquérant espagnol a mis fin à l'Empire aztèque ?",
+    "a": "Hernán Cortés",
+    "b": "Francisco Pizarro",
+    "c": "Diego Velázquez",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de France",
+    "question": "Quel roi de France a été guillotiné pendant la Révolution française ?",
+    "a": "Louis XVI",
+    "b": "Louis XV",
+    "c": "Louis XVIII",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de France",
+    "question": "Quel événement du 14 juillet 1789 est devenu le symbole de la Révolution française ?",
+    "a": "La prise de la Bastille",
+    "b": "La fuite à Varennes",
+    "c": "La proclamation de la République",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de France",
+    "question": "En quelle année Napoléon Bonaparte a-t-il été sacré empereur des Français ?",
+    "a": "1804",
+    "b": "1799",
+    "c": "1815",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de France",
+    "question": "Quelle bataille a mis fin définitivement au règne de Napoléon Ier en 1815 ?",
+    "a": "Waterloo",
+    "b": "Leipzig",
+    "c": "Borodino",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de France",
+    "question": "Qui a été le premier président de la IIe République française, élu en 1848 ?",
+    "a": "Louis-Napoléon Bonaparte",
+    "b": "Adolphe Thiers",
+    "c": "Alphonse de Lamartine",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de France",
+    "question": "Sous quel régime politique la France était-elle gouvernée en 1789 avant la Révolution ?",
+    "a": "L'Ancien Régime",
+    "b": "La monarchie constitutionnelle",
+    "c": "La République",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de France",
+    "question": "Quel roi de France a construit le château de Versailles comme résidence principale ?",
+    "a": "Louis XIV",
+    "b": "Louis XIII",
+    "c": "Henri IV",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de France",
+    "question": "En quelle année la IIIe République française a-t-elle été proclamée ?",
+    "a": "1870",
+    "b": "1848",
+    "c": "1889",
+    "correct": "A"
+  },
+  {
+    "theme": "Personnages historiques",
+    "question": "Quel roi de France était surnommé le 'Roi-Soleil' ?",
+    "a": "Louis XIV",
+    "b": "Louis XV",
+    "c": "François Ier",
+    "correct": "A"
+  },
+  {
+    "theme": "Personnages historiques",
+    "question": "Quel général de Gaulle a dirigé la France Libre depuis Londres pendant la Seconde Guerre mondiale ?",
+    "a": "Charles de Gaulle",
+    "b": "Philippe Leclerc",
+    "c": "Jean de Lattre de Tassigny",
+    "correct": "A"
+  },
+  {
+    "theme": "Personnages historiques",
+    "question": "Qui a fondé l'Empire mongol au XIIIe siècle ?",
+    "a": "Gengis Khan",
+    "b": "Kublai Khan",
+    "c": "Tamerlan",
+    "correct": "A"
+  },
+  {
+    "theme": "Personnages historiques",
+    "question": "Quel scientifique a formulé la théorie de la relativité ?",
+    "a": "Albert Einstein",
+    "b": "Isaac Newton",
+    "c": "Max Planck",
+    "correct": "A"
+  },
+  {
+    "theme": "Personnages historiques",
+    "question": "Qui a été président des États-Unis pendant la guerre de Sécession ?",
+    "a": "Abraham Lincoln",
+    "b": "Ulysses Grant",
+    "c": "Andrew Johnson",
+    "correct": "A"
+  },
+  {
+    "theme": "Personnages historiques",
+    "question": "Quel leader indien a utilisé la non-violence pour obtenir l'indépendance face à la Grande-Bretagne ?",
+    "a": "Gandhi",
+    "b": "Jawaharlal Nehru",
+    "c": "Subhas Chandra Bose",
+    "correct": "A"
+  },
+  {
+    "theme": "Personnages historiques",
+    "question": "Quel tsar russe a modernisé la Russie et fondé Saint-Pétersbourg ?",
+    "a": "Pierre le Grand",
+    "b": "Catherine II",
+    "c": "Ivan le Terrible",
+    "correct": "A"
+  },
+  {
+    "theme": "Personnages historiques",
+    "question": "Qui a écrit 'Du contrat social', ouvrage qui a influencé la Révolution française ?",
+    "a": "Jean-Jacques Rousseau",
+    "b": "Voltaire",
+    "c": "Montesquieu",
+    "correct": "A"
+  },
+  {
+    "theme": "Guerres mondiales",
+    "question": "Quel événement a déclenché la Première Guerre mondiale en 1914 ?",
+    "a": "L'assassinat de l'archiduc François-Ferdinand à Sarajevo",
+    "b": "L'invasion de la Belgique par l'Allemagne",
+    "c": "La déclaration de guerre de la France à l'Allemagne",
+    "correct": "A"
+  },
+  {
+    "theme": "Guerres mondiales",
+    "question": "En quelle année la Première Guerre mondiale a-t-elle pris fin ?",
+    "a": "1918",
+    "b": "1916",
+    "c": "1920",
+    "correct": "A"
+  },
+  {
+    "theme": "Guerres mondiales",
+    "question": "Quel traité a mis officiellement fin à la Première Guerre mondiale ?",
+    "a": "Le traité de Versailles",
+    "b": "Le traité de Paris",
+    "c": "L'armistice de Rethondes",
+    "correct": "A"
+  },
+  {
+    "theme": "Guerres mondiales",
+    "question": "Quel était le nom du projet secret américain pour développer la bombe atomique ?",
+    "a": "Le projet Manhattan",
+    "b": "Le projet Overlord",
+    "c": "Le projet Apollo",
+    "correct": "A"
+  },
+  {
+    "theme": "Guerres mondiales",
+    "question": "Quel pays a attaqué Pearl Harbor le 7 décembre 1941 ?",
+    "a": "Le Japon",
+    "b": "L'Allemagne",
+    "c": "L'Italie",
+    "correct": "A"
+  },
+  {
+    "theme": "Guerres mondiales",
+    "question": "En quelle année l'Allemagne a-t-elle envahi la Pologne, déclenchant la Seconde Guerre mondiale ?",
+    "a": "1939",
+    "b": "1938",
+    "c": "1940",
+    "correct": "A"
+  },
+  {
+    "theme": "Guerres mondiales",
+    "question": "Quel nom porte le débarquement allié en Normandie du 6 juin 1944 ?",
+    "a": "Opération Overlord",
+    "b": "Opération Barbarossa",
+    "c": "Opération Torch",
+    "correct": "A"
+  },
+  {
+    "theme": "Guerres mondiales",
+    "question": "Dans quelle ville la première bombe atomique a-t-elle été larguée en août 1945 ?",
+    "a": "Hiroshima",
+    "b": "Nagasaki",
+    "c": "Tokyo",
+    "correct": "A"
+  },
+  {
+    "theme": "Guerres mondiales",
+    "question": "Quel accord de 1938 a permis à Hitler d'annexer les Sudètes sans guerre ?",
+    "a": "Les accords de Munich",
+    "b": "Le pacte germano-soviétique",
+    "c": "Le traité de Locarno",
+    "correct": "A"
+  },
+  {
+    "theme": "Guerres mondiales",
+    "question": "Quel pays a rejoint les Alliés en 1917, changeant l'équilibre de la Première Guerre mondiale ?",
+    "a": "Les États-Unis",
+    "b": "La Russie",
+    "c": "L'Italie",
+    "correct": "A"
+  }
+]
