@@ -3,15 +3,18 @@ session_start();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($_POST['username'])) {
-        $_SESSION['username'] = $_POST['username']; 
-        $_SESSION['avatar'] = $_POST['avatar'];  
-        $_SESSION['age'] = $_POST['age'] ?? null;
-        $_SESSION['language'] = $_POST['language'] ?? 'fr';
+        $_SESSION['username'] = htmlspecialchars($_POST['username'], ENT_QUOTES, 'UTF-8'); 
+        $_SESSION['avatar'] = !empty($_POST['avatar']) ? htmlspecialchars($_POST['avatar'], ENT_QUOTES, 'UTF-8') : 'default';
+        $_SESSION['age'] = !empty($_POST['age']) ? intval($_POST['age']) : null;
+        $_SESSION['language'] = !empty($_POST['language']) ? htmlspecialchars($_POST['language'], ENT_QUOTES, 'UTF-8') : 'fr';
 
         $roomId = null;
         if (!empty($_POST['room_code'])) {
             // Rejoindre une room spécifique
-            $roomId = intval($_POST['room_code']); // Assuming room_code is numeric
+            $roomId = intval($_POST['room_code']);
+            if ($roomId <= 0) {
+                $roomId = null; // Invalid room ID
+            }
         } else {
             // Créer ou trouver une room disponible
             $roomId = trouverRoomDisponible();

@@ -85,7 +85,7 @@ if (!isset($etat['questions_manches'][$manche])) {
     $themeChoisi = choisirThemeAleatoire($themes);
     $etat['theme_manche'] = $themeChoisi;
     $questionsFiltrees = filtrerQuestionsParTheme($questions, $themeChoisi);
-    $questionsSelectionnees = selectionnerQuestionsAleatoires($questionsFiltrees, 5);
+    $questionsSelectionnees = selectionnerQuestionsAleatoires($questionsFiltrees, 8);
     
     $etat['questions_manches'][$manche] = [];
     foreach ($questionsSelectionnees as $q) {
@@ -225,7 +225,6 @@ $deuxReponses = isset($etat['reponses'][$questionIndex]['joueur1']) && isset($et
 
   <?php echo $timerScript; ?>
 
-  <script src="quiz.js"></script>
   <script src="quiz.js"></script>
   <script>
     function selectAnswer(answer) {
