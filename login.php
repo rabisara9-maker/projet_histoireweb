@@ -76,7 +76,7 @@ function trouverRoomDisponible() {
 
         <div class="form-group">
           <label for="player-age">Âge</label>
-          <input type="number" id="player-age" name="age" placeholder="Entrez votre âge" min="10" max="100" />
+          <input type="number" id="player-age" name="age" placeholder="Entrez votre âge" min="10" max="100" required />
         </div>
 
         <div class="form-group">
