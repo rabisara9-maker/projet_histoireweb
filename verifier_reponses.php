@@ -48,7 +48,6 @@ if (isset($etat['reponses'][$questionIndex]['joueur1']) && isset($etat['reponses
     
     // Passer à la question suivante
     $etat['question_actuelle']++;
-    unset($etat['question_start_time']); // Réinitialiser le timer pour la prochaine question
 }
 
 // Sauvegarder

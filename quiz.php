@@ -98,12 +98,6 @@ if (!isset($etat['questions_manches'][$manche])) {
 $questionIndex = $etat['question_actuelle'];
 $questionsManche = $etat['questions_manches'][$manche];
 
-// Initialiser le start_time pour cette question si pas encore fait
-if (!isset($etat['question_start_time'])) {
-    $etat['question_start_time'] = time();
-    ecrireEtatPartage($etat);
-}
-
 if ($questionIndex >= count($questionsManche)) {
     // Toutes les questions répondues, passer à la manche suivante
     if ($manche < 3) {
@@ -130,32 +124,22 @@ $nomAdverse = $roomData[$joueurAdverse];
 $scoreJoueur = $etat['score_' . $joueur];
 $scoreAdverse = $etat['score_' . $joueurAdverse];
 
-// Timer JavaScript (30 secondes) - calculer le temps restant depuis le début de la question
+// Timer JavaScript (30 secondes) - seulement si pas déjà répondu
 $timerScript = '';
 if (!isset($etat['reponses'][$questionIndex][$joueur])) {
-    $elapsedTime = time() - $etat['question_start_time'];
-    $timeLeft = max(0, 30 - $elapsedTime);
-    
-    if ($timeLeft > 0) {
-        $timerScript = "<script>
-        let timeLeft = {$timeLeft};
-        const timerElement = document.getElementById('timer');
-        const countdown = setInterval(() => {
-            timeLeft--;
-            timerElement.textContent = 'Temps restant : ' + timeLeft + ' secondes';
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                // Auto-soumettre une réponse vide
-                document.getElementById('quizForm').submit();
-            }
-        }, 1000);
-        </script>";
-    } else {
-        // Temps écoulé, soumettre automatiquement
-        $timerScript = "<script>
-        document.getElementById('quizForm').submit();
-        </script>";
-    }
+    $timerScript = "<script>
+    let timeLeft = 30;
+    const timerElement = document.getElementById('timer');
+    const countdown = setInterval(() => {
+        timeLeft--;
+        timerElement.textContent = 'Temps restant : ' + timeLeft + ' secondes';
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            // Auto-soumettre une réponse vide
+            document.getElementById('quizForm').submit();
+        }
+    }, 1000);
+    </script>";
 }
 
 // Vérifier si les deux joueurs ont répondu à cette question

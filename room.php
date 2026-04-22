@@ -2,106 +2,145 @@
 session_start();
 
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit();  
+    header("Location: login.php"); exit();
 }
 
-$username = $_SESSION['username']; 
-$avatar = $_SESSION['avatar'];
-$roomId = $_SESSION['room_id'] ?? 1; // Par défaut room 1
+$username = $_SESSION['username'];
+$avatar   = $_SESSION['avatar'] ?? 'default';
+$roomId   = $_SESSION['room_id'] ?? 1;
 
-// Fichier partagé pour la room
 $sharedRoomFile = "shared_room_{$roomId}.json";
+
 function lireRoomPartage() {
     global $sharedRoomFile;
     if (file_exists($sharedRoomFile)) {
-        return json_decode(file_get_contents($sharedRoomFile), true);
+        $d = json_decode(file_get_contents($sharedRoomFile), true);
+        return is_array($d) ? $d : [];
     }
-    return ['joueur1' => null, 'joueur2' => null, 'avatar1' => null, 'avatar2' => null];
+    return ['joueur1'=>null,'joueur2'=>null,'avatar1'=>null,'avatar2'=>null,'partie_lancee'=>false];
 }
 function ecrireRoomPartage($room) {
     global $sharedRoomFile;
-    file_put_contents($sharedRoomFile, json_encode($room));
+    $tmp = $sharedRoomFile . '.tmp.' . getmypid();
+    file_put_contents($tmp, json_encode($room));
+    rename($tmp, $sharedRoomFile);
 }
 
 $room = lireRoomPartage();
 
-// Gérer les joueurs dans le fichier partagé
+// Inscrire le joueur dans la room
 if (!$room['joueur1']) {
     $room['joueur1'] = $username;
     $room['avatar1'] = $avatar;
+    $room['partie_lancee'] = false;
     ecrireRoomPartage($room);
-} elseif (!$room['joueur2'] && $room['joueur1'] !== $username) {
+} elseif ($room['joueur1'] !== $username && !$room['joueur2']) {
     $room['joueur2'] = $username;
     $room['avatar2'] = $avatar;
     ecrireRoomPartage($room);
 }
 
-// Vérifier si 2 joueurs sont présents
-$joueur1 = $room['joueur1'];
-$joueur2 = $room['joueur2'];
+// CORRECTION BUG #9 : détecter le lancement côté serveur pour synchroniser
+// Si la partie est marquée lancée, rediriger immédiatement
+if (!empty($room['partie_lancee'])) {
+    header("Location: quiz.php"); exit();
+}
+
+// Traitement du bouton "Commencer"
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'start') {
+    $room = lireRoomPartage();
+    if ($room['joueur1'] && $room['joueur2']) {
+        $room['partie_lancee'] = true;
+        ecrireRoomPartage($room);
+        header("Location: quiz.php"); exit();
+    }
+}
+
+$joueur1     = $room['joueur1'] ?? null;
+$joueur2     = $room['joueur2'] ?? null;
 $deuxJoueurs = $joueur1 && $joueur2;
 ?>
-
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quiz Battle - Salle d'attente</title>
-  <link rel="stylesheet" href="waiting-room.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiz Battle – Salle d'attente</title>
+  <link rel="stylesheet" href="waiting-room.css"/>
 </head>
-
 <body>
-  <div class="page">
-    <div class="card">
-      <header class="card-header">
-        <h1>Salle d’attente</h1>
-        <p>Les deux joueurs doivent être connectés avant de commencer la partie.</p>
-      </header>
+<div class="page">
+  <div class="card">
+    <header class="card-header">
+      <h1>Salle d'attente</h1>
+      <p>Les deux joueurs doivent être connectés avant de commencer.</p>
+    </header>
 
-      <section class="room-box">
-        <p>Code de la room : <strong><?php echo $roomId; ?></strong></p>
-      </section>
+    <section class="room-box">
+      <p>Code de la room : <strong><?= htmlspecialchars((string)$roomId) ?></strong></p>
+      <p style="font-size:.85rem;color:#dbeafe;margin-top:6px;">
+        Partagez ce code à votre adversaire pour qu'il rejoigne la même room.
+      </p>
+    </section>
 
-      <section class="players">
-        <div class="player-card">
-          <div class="avatar"><?php echo $room['avatar1'] ? "<img src='{$room['avatar1']}' alt='Avatar'>" : "👤"; ?></div>
-          <h2>Joueur 1</h2>
-          <p class="player-name"><?php echo $joueur1 ?? 'En attente...'; ?></p>
-          <p class="status <?php echo $joueur1 ? 'status-online' : 'status-offline'; ?>"><?php echo $joueur1 ? 'Connecté' : 'Non connecté'; ?></p>
-        </div>
+    <section class="players">
+      <div class="player-card">
+        <div class="avatar">👤</div>
+        <h2>Joueur 1</h2>
+        <p class="player-name"><?= htmlspecialchars($joueur1 ?? 'En attente…') ?></p>
+        <p class="status <?= $joueur1 ? 'status-online' : 'status-offline' ?>">
+          <?= $joueur1 ? 'Connecté' : 'Non connecté' ?>
+        </p>
+      </div>
 
-        <div class="versus">VS</div>
+      <div class="versus">VS</div>
 
-        <div class="player-card">
-          <div class="avatar"><?php echo $room['avatar2'] ? "<img src='{$room['avatar2']}' alt='Avatar'>" : "👤"; ?></div>
-          <h2>Joueur 2</h2>
-          <p class="player-name"><?php echo $joueur2 ?? 'En attente...'; ?></p>
-          <p class="status <?php echo $joueur2 ? 'status-online' : 'status-offline'; ?>"><?php echo $joueur2 ? 'Connecté' : 'Non connecté'; ?></p>
-        </div>
-      </section>
+      <div class="player-card">
+        <div class="avatar">👤</div>
+        <h2>Joueur 2</h2>
+        <p class="player-name"><?= htmlspecialchars($joueur2 ?? 'En attente…') ?></p>
+        <p class="status <?= $joueur2 ? 'status-online' : 'status-offline' ?>">
+          <?= $joueur2 ? 'Connecté' : 'Non connecté' ?>
+        </p>
+      </div>
+    </section>
 
-      <section class="info-box">
-        <h2>Informations</h2>
-        <ul>
-          <li>La partie se déroule en 3 quiz</li>
-          <li>Chaque quiz contient 8 questions aléatoires</li>
-          <li>Le premier joueur qui gagne 2 quiz remporte la partie</li>
-        </ul>
-      </section>
+    <section class="info-box">
+      <h2>Règles</h2>
+      <ul>
+        <li>2 joueurs par room</li>
+        <li>3 manches par partie</li>
+        <li>8 questions aléatoires par manche</li>
+        <li>Le premier à gagner 2 manches remporte la partie</li>
+      </ul>
+    </section>
 
-      <?php if ($deuxJoueurs): ?>
-        <form action="quiz.php" method="POST">
-          <button class="start-btn" type="submit">Commencer la partie</button>
-        </form>
-      <?php else: ?>
-        <p>En attente d'un deuxième joueur...</p>
-        <script>setTimeout(() => { location.reload(); }, 2000);</script> <!-- Auto-refresh pour voir les nouveaux joueurs -->
-      <?php endif; ?>
-    </div>
+    <?php if ($deuxJoueurs): ?>
+      <!-- CORRECTION BUG #9 : n'importe quel joueur peut lancer -->
+      <form action="room.php" method="POST">
+        <input type="hidden" name="action" value="start">
+        <button class="start-btn" type="submit">⚔️ Commencer la partie</button>
+      </form>
+    <?php else: ?>
+      <p style="text-align:center;color:#dbeafe;">En attente d'un deuxième joueur…</p>
+    <?php endif; ?>
   </div>
-</body>
+</div>
 
+<script>
+// Polling léger pour détecter l'arrivée du 2e joueur OU le lancement de la partie
+(function() {
+  const deuxJoueurs = <?= json_encode($deuxJoueurs) ?>;
+  const iv = setInterval(() => {
+    fetch('etat_room.php')
+      .then(r => r.json())
+      .then(d => {
+        if (d.partie_lancee) { clearInterval(iv); location.href = 'quiz.php'; return; }
+        if (!deuxJoueurs && d.joueur1 && d.joueur2) { clearInterval(iv); location.reload(); }
+      })
+      .catch(() => {});
+  }, 2000);
+})();
+</script>
+</body>
 </html>
