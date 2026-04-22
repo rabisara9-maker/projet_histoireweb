@@ -17,23 +17,10 @@ function ecrireEtatPartage($etat) {
 }
 
 $etat = lireEtatPartage();
-
-// Ensure required keys exist
-if (empty($etat)) {
-    $etat = [
-        'manche' => 1,
-        'score_joueur1' => 0,
-        'score_joueur2' => 0,
-        'questions_manches' => [],
-        'question_actuelle' => 0,
-        'reponses' => []
-    ];
-}
-
-$manche = $etat['manche'] ?? 1;
-$questionIndex = $etat['question_actuelle'] ?? 0;
-$questionsManche = $etat['questions_manches'][$manche] ?? [];
-$currentQuestion = $questionsManche[$questionIndex] ?? [];
+$manche = $etat['manche'];
+$questionIndex = $etat['question_actuelle'];
+$questionsManche = $etat['questions_manches'][$manche];
+$currentQuestion = $questionsManche[$questionIndex];
 
 // Identifier le joueur actuel
 $sharedRoomFile = "shared_room_{$roomId}.json";
@@ -42,14 +29,6 @@ if (!file_exists($sharedRoomFile)) {
     exit();
 }
 $roomData = json_decode(file_get_contents($sharedRoomFile), true);
-// Initialize reponses array if needed
-if (!isset($etat['reponses'])) {
-    $etat['reponses'] = [];
-}
-if (!isset($etat['reponses'][$questionIndex])) {
-    $etat['reponses'][$questionIndex] = [];
-}
-
 $joueur = ($roomData['joueur1'] == $_SESSION['username']) ? 'joueur1' : 'joueur2';
 
 // Stocker la réponse du joueur pour cette question (écrase si déjà répondu)
@@ -58,13 +37,13 @@ $etat['reponses'][$questionIndex][$joueur] = $reponse;
 
 // Vérifier si les deux joueurs ont répondu
 if (isset($etat['reponses'][$questionIndex]['joueur1']) && isset($etat['reponses'][$questionIndex]['joueur2'])) {
-    // Calculate points
-    $lettreCorrecte = chr(64 + ($currentQuestion['correct'] ?? 1));
+    // Calculer les points
+    $lettreCorrecte = chr(64 + $currentQuestion['correct']);
     if (!empty($etat['reponses'][$questionIndex]['joueur1']) && $etat['reponses'][$questionIndex]['joueur1'] === $lettreCorrecte) {
-        $etat['score_joueur1'] = ($etat['score_joueur1'] ?? 0) + 1;
+        $etat['score_joueur1']++;
     }
     if (!empty($etat['reponses'][$questionIndex]['joueur2']) && $etat['reponses'][$questionIndex]['joueur2'] === $lettreCorrecte) {
-        $etat['score_joueur2'] = ($etat['score_joueur2'] ?? 0) + 1;
+        $etat['score_joueur2']++;
     }
     
     // Passer à la question suivante
