@@ -38,8 +38,7 @@ if (empty($etat)) {
         'questions_manches' => [],
         'theme_manche' => null,
         'question_actuelle' => 0,
-        'reponses' => [],
-        'start_time' => time() + 5  // Démarre dans 5 secondes
+        'reponses' => [],        'question_start_times' => [],        'start_time' => time() + 5  // Démarre dans 5 secondes
     ];
 }
 
@@ -94,6 +93,11 @@ if (!isset($etat['questions_manches'][$manche])) {
     ecrireEtatPartage($etat);
 }
 
+// Initialiser les temps de démarrage pour les questions si nécessaire
+if (!isset($etat['question_start_times'])) {
+    $etat['question_start_times'] = [];
+}
+
 // Afficher la question actuelle
 $questionIndex = $etat['question_actuelle'];
 $questionsManche = $etat['questions_manches'][$manche];
@@ -127,19 +131,36 @@ $scoreAdverse = $etat['score_' . $joueurAdverse];
 // Timer JavaScript (30 secondes) - seulement si pas déjà répondu
 $timerScript = '';
 if (!isset($etat['reponses'][$questionIndex][$joueur])) {
-    $timerScript = "<script>
-    let timeLeft = 30;
-    const timerElement = document.getElementById('timer');
-    const countdown = setInterval(() => {
-        timeLeft--;
-        timerElement.textContent = 'Temps restant : ' + timeLeft + ' secondes';
-        if (timeLeft <= 0) {
-            clearInterval(countdown);
-            // Auto-soumettre une réponse vide
-            document.getElementById('quizForm').submit();
-        }
-    }, 1000);
-    </script>";
+    // Enregistrer le temps de démarrage de la question
+    if (!isset($etat['question_start_times'][$questionIndex])) {
+        $etat['question_start_times'][$questionIndex] = time();
+        ecrireEtatPartage($etat);
+    }
+    
+    // Calculer le temps restant basé sur le temps écoulé réel
+    $questionStartTime = $etat['question_start_times'][$questionIndex];
+    $elapsedTime = time() - $questionStartTime;
+    $timeLeft = max(0, 30 - $elapsedTime);
+    
+    if ($timeLeft > 0) {
+        $timerScript = "<script>
+        let timeLeft = $timeLeft;
+        const timerElement = document.getElementById('timer');
+        const countdown = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = 'Temps restant : ' + timeLeft + ' secondes';
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                document.getElementById('quizForm').submit();
+            }
+        }, 1000);
+        </script>";
+    } else {
+        // Le temps est dépassé, auto-soumettre
+        $timerScript = "<script>
+        document.getElementById('quizForm').submit();
+        </script>";
+    }
 }
 
 // Vérifier si les deux joueurs ont répondu à cette question
