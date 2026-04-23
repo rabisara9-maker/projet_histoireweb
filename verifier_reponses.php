@@ -1,8 +1,14 @@
 <?php
 session_start();
 
-$roomId     = $_SESSION['room_id'] ?? 1;
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit();
+}
+
+$roomId = $_SESSION['room_id'] ?? 1;
 $sharedFile = "shared_game_{$roomId}.json";
+$sharedRoomFile = "shared_room_{$roomId}.json";
 
 function lireEtatPartage() {
     global $sharedFile;
@@ -12,84 +18,125 @@ function lireEtatPartage() {
     }
     return [];
 }
+
 function ecrireEtatPartage($etat) {
     global $sharedFile;
-    // CORRECTION BUG #3 : écriture atomique (rename est atomique sur même FS)
     $tmp = $sharedFile . '.tmp.' . getmypid();
     file_put_contents($tmp, json_encode($etat));
     rename($tmp, $sharedFile);
 }
 
-// ── Validation de l'entrée ───────────────────────────────────────────────────
-$sharedRoomFile = "shared_room_{$roomId}.json";
 if (!file_exists($sharedRoomFile)) {
-    header("Location: room.php"); exit();
+    header("Location: room.php");
+    exit();
 }
+
 $roomData = json_decode(file_get_contents($sharedRoomFile), true);
-$joueur   = ($roomData['joueur1'] === $_SESSION['username']) ? 'joueur1' : 'joueur2';
+if (!is_array($roomData)) {
+    header("Location: room.php");
+    exit();
+}
 
-$reponsePost    = $_POST['reponse']        ?? '';
+$joueur = ($roomData['joueur1'] === $_SESSION['username']) ? 'joueur1' : 'joueur2';
+
+$reponsePost = $_POST['reponse'] ?? '';
 $questionIndexP = (int)($_POST['question_index'] ?? 0);
+$reponsePropre = in_array($reponsePost, ['A', 'B', 'C', '']) ? $reponsePost : '';
 
-// Valider que la réponse est A, B ou C (ou vide pour timeout)
-$reponsePropre = in_array($reponsePost, ['A','B','C','']) ? $reponsePost : '';
+// Lire l’état courant
+$etat = lireEtatPartage();
+if (empty($etat)) {
+    header("Location: quiz.php");
+    exit();
+}
 
-// ── Lecture de l'état ─────────────────────────────────────────────────────────
-$etat          = lireEtatPartage();
-$manche        = (int)($etat['manche'] ?? 1);
-$mancheKey     = (string)$manche;
+$manche = (int)($etat['manche'] ?? 1);
+$mancheKey = (string)$manche;
 $questionIndex = (int)($etat['question_actuelle'] ?? 0);
 
-// Ignorer si la question soumise ne correspond plus à la courante (double-soumission)
+// Si on n'est plus sur la bonne question, on recharge
 if ($questionIndexP !== $questionIndex) {
-    header("Location: quiz.php"); exit();
+    header("Location: quiz.php");
+    exit();
 }
 
-// Initialiser les tableaux si nécessaire
-if (!isset($etat['reponses']))                    $etat['reponses']      = [];
-if (!isset($etat['reponses'][$questionIndex]))    $etat['reponses'][$questionIndex] = [];
-if (!isset($etat['score_calcule']))               $etat['score_calcule'] = [];
+// Initialisations
+if (!isset($etat['reponses']) || !is_array($etat['reponses'])) {
+    $etat['reponses'] = [];
+}
+if (!isset($etat['reponses'][$questionIndex]) || !is_array($etat['reponses'][$questionIndex])) {
+    $etat['reponses'][$questionIndex] = [];
+}
+if (!isset($etat['score_calcule']) || !is_array($etat['score_calcule'])) {
+    $etat['score_calcule'] = [];
+}
+if (!isset($etat['score_joueur1'])) {
+    $etat['score_joueur1'] = 0;
+}
+if (!isset($etat['score_joueur2'])) {
+    $etat['score_joueur2'] = 0;
+}
+if (!isset($etat['manche_terminee'])) {
+    $etat['manche_terminee'] = false;
+}
 
-// Ignorer si ce joueur a déjà répondu à cette question
+// Si la manche est déjà terminée, ne plus rien traiter
+if (!empty($etat['manche_terminee'])) {
+    header("Location: quiz.php");
+    exit();
+}
+
+// Si ce joueur a déjà répondu, ne pas dupliquer
 if (isset($etat['reponses'][$questionIndex][$joueur])) {
-    header("Location: quiz.php"); exit();
+    header("Location: quiz.php");
+    exit();
 }
 
-// Enregistrer la réponse
+// Enregistrer la réponse du joueur
 $etat['reponses'][$questionIndex][$joueur] = $reponsePropre;
+ecrireEtatPartage($etat);
 
-// ── Vérifier si les deux joueurs ont répondu ──────────────────────────────────
+// Relecture immédiate après écriture
+$etat = lireEtatPartage();
+
+$manche = (int)($etat['manche'] ?? 1);
+$mancheKey = (string)$manche;
+$questionIndex = (int)($etat['question_actuelle'] ?? 0);
+
 $j1Repondu = isset($etat['reponses'][$questionIndex]['joueur1']);
 $j2Repondu = isset($etat['reponses'][$questionIndex]['joueur2']);
 
 if ($j1Repondu && $j2Repondu) {
-    // CORRECTION BUG #4 : vérifier qu'on n'a pas déjà calculé le score pour cette question
+    // Recalculer depuis le dernier état pour éviter les conflits
     if (!isset($etat['score_calcule'][$questionIndex])) {
         $questionsManche = $etat['questions_manches'][$mancheKey] ?? [];
-        $currentQuestion = $questionsManche[$questionIndex] ?? [];
-        $lettreCorrecte  = chr(64 + (int)($currentQuestion['correct'] ?? 1));
+        $currentQuestion = $questionsManche[$questionIndex] ?? null;
 
-        $rep1 = $etat['reponses'][$questionIndex]['joueur1'];
-        $rep2 = $etat['reponses'][$questionIndex]['joueur2'];
+        if (is_array($currentQuestion)) {
+            $lettreCorrecte = chr(64 + (int)($currentQuestion['correct'] ?? 1));
 
-        if ($rep1 !== '' && $rep1 === $lettreCorrecte) {
-            $etat['score_joueur1'] = (int)($etat['score_joueur1'] ?? 0) + 1;
+            $rep1 = $etat['reponses'][$questionIndex]['joueur1'] ?? '';
+            $rep2 = $etat['reponses'][$questionIndex]['joueur2'] ?? '';
+
+            if ($rep1 !== '' && $rep1 === $lettreCorrecte) {
+                $etat['score_joueur1'] = (int)$etat['score_joueur1'] + 1;
+            }
+            if ($rep2 !== '' && $rep2 === $lettreCorrecte) {
+                $etat['score_joueur2'] = (int)$etat['score_joueur2'] + 1;
+            }
+
+            $etat['score_calcule'][$questionIndex] = true;
+
+            // Avancer UNE SEULE FOIS à la question suivante
+            if ((int)($etat['question_actuelle'] ?? 0) === $questionIndex) {
+                $etat['question_actuelle'] = $questionIndex + 1;
+            }
+
+            ecrireEtatPartage($etat);
         }
-        if ($rep2 !== '' && $rep2 === $lettreCorrecte) {
-            $etat['score_joueur2'] = (int)($etat['score_joueur2'] ?? 0) + 1;
-        }
-
-        // Marquer cette question comme scorée
-        $etat['score_calcule'][$questionIndex] = true;
-
-        // Avancer à la question suivante
-        $etat['question_actuelle']++;
     }
 }
 
-ecrireEtatPartage($etat);
-
-// Réponse JSON pour AJAX, redirect sinon
 $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
           strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 
