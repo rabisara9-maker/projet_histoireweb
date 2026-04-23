@@ -127,6 +127,14 @@ if (!isset($etat['questions_manches'][$mancheKey])) {
     $questionsSelectionnees = array_slice($questionsFiltrees, 0, $QUESTIONS_PAR_MANCHE);
 
     $etat['questions_manches'][$mancheKey] = array_map('melangerOptions', $questionsSelectionnees);
+    $etat['question_start_time'] = time(); // Démarrer le timer pour la 1ère question
+    ecrireEtatPartage($etat);
+}
+
+// ── Enregistrer le start_time si question vient de changer (nouveau chargement sans timer) ──
+// Si question_start_time n'existe pas ou correspond à une ancienne question, le créer
+if (!isset($etat['question_start_time'])) {
+    $etat['question_start_time'] = time();
     ecrireEtatPartage($etat);
 }
 
@@ -256,6 +264,14 @@ if (!empty($etat['manche_terminee'])) {
 $currentQuestion = $questionsManche[$questionIndex] ?? [];
 $theme           = $etat['theme_manche'] ?? 'Thème';
 $dejaRepondu     = isset($etat['reponses'][$questionIndex][$joueur]);
+
+// ── Calcul du temps restant RÉEL (résiste aux actualisations) ─────────────────
+$TIMER_DUREE     = 30;
+$questionStart   = (int)($etat['question_start_time'] ?? time());
+$tempsEcoule     = time() - $questionStart;
+$tempsRestant    = max(0, $TIMER_DUREE - $tempsEcoule);
+// Si le timer est expiré et que le joueur n'a pas encore répondu → auto-submit côté serveur
+// (géré en JS, mais on passe la valeur réelle au frontend)
 $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
                    isset($etat['reponses'][$questionIndex]['joueur2']);
 ?>
@@ -338,7 +354,7 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
       <div class="timer-box">
         <p>Temps restant</p>
         <div class="timer-bar"><div class="timer-fill" id="timerBar"></div></div>
-        <span id="timer"><?= $dejaRepondu ? 'Répondu ✓' : '30 s' ?></span>
+        <span id="timer"><?= $dejaRepondu ? 'Répondu ✓' : $tempsRestant . ' s' ?></span>
       </div>
     </header>
 
@@ -432,9 +448,22 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
 <?php if (!$dejaRepondu): ?>
 (function() {
   const TOTAL = 30;
-  let left = TOTAL;
+  // Temps restant RÉEL calculé côté serveur — résiste aux actualisations de page
+  let left = <?= $tempsRestant ?>;
+
   const lbl = document.getElementById('timer');
   const bar = document.getElementById('timerBar');
+
+  // Affichage immédiat de la valeur correcte
+  lbl.textContent = left + ' s';
+  bar.style.width = (left / TOTAL * 100) + '%';
+  bar.style.background = left <= 10 ? '#ef4444' : '#22c55e';
+
+  if (left <= 0) {
+    // Déjà expiré au chargement → soumettre immédiatement
+    document.getElementById('quizForm').submit();
+    return;
+  }
 
   const t = setInterval(() => {
     left--;
