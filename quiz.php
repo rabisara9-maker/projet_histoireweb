@@ -282,65 +282,73 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quiz Battle – Manche <?= $manche ?></title>
   <link rel="stylesheet" href="quiz.css"/>
-  <style>
-    .waiting-msg {
-      text-align: center;
-      padding: 28px 0;
-    }
+<style>
+  .waiting-msg {
+    text-align: center;
+    padding: 30px 0;
+    color: #fde68a;
+  }
 
-    .waiting-msg .spinner {
-      display: inline-block;
-      width: 36px;
-      height: 36px;
-      border: 4px solid rgba(255,255,255,0.2);
-      border-top-color: #22c55e;
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-      margin-bottom: 12px;
-    }
+  .waiting-msg .spinner {
+    display: inline-block;
+    width: 38px;
+    height: 38px;
+    border: 4px solid rgba(250, 204, 21, 0.18);
+    border-top-color: #facc15;
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    margin-bottom: 12px;
+    box-shadow: 0 0 14px rgba(250, 204, 21, 0.35);
+  }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
 
-    .manches-bar {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
+  .manches-bar {
+    display: flex;
+    gap: 9px;
+    align-items: center;
+  }
 
-    .manche-dot {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: .65rem;
-      font-weight: bold;
-    }
+  .manche-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(250, 204, 21, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .7rem;
+    font-weight: bold;
+    color: #fef3c7;
+    background: rgba(41, 24, 12, 0.75);
+  }
 
-    .manche-dot.won {
-      background: #22c55e;
-      border-color: #22c55e;
-    }
+  .manche-dot.won {
+    background: linear-gradient(135deg, #d97706, #facc15);
+    border-color: #facc15;
+    color: #1c1208;
+  }
 
-    .manche-dot.lost {
-      background: #ef4444;
-      border-color: #ef4444;
-    }
+  .manche-dot.lost {
+    background: linear-gradient(135deg, #7f1d1d, #dc2626);
+    border-color: #ef4444;
+    color: #fff7ed;
+  }
 
-    .answer-btn.disabled {
-      opacity: .55;
-      cursor: not-allowed;
-    }
+  .answer-btn.disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    filter: grayscale(0.4);
+  }
 
-    .answer-btn.already {
-      background: #3b82f6;
-      color: #fff;
-    }
-  </style>
+  .answer-btn.already {
+    background: linear-gradient(135deg, #92400e, #f59e0b);
+    color: #fff7ed;
+    border-color: #facc15;
+  }
+</style>
 </head>
 <body>
 <div class="page">
