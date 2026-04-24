@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/db.php';
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['room_id'])) {
@@ -8,19 +9,7 @@ if (!isset($_SESSION['room_id'])) {
 }
 
 $roomId = (int) $_SESSION['room_id'];
-$sharedFile = "shared_game_{$roomId}.json";
-
-if (!file_exists($sharedFile)) {
-    echo json_encode([]);
-    exit();
-}
-
-$data = json_decode(file_get_contents($sharedFile), true);
-
-if (!is_array($data)) {
-    echo json_encode([]);
-    exit();
-}
+$data = getGameState($roomId);
 
 echo json_encode([
     'manche'             => (int)($data['manche'] ?? 1),

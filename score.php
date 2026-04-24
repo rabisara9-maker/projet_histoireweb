@@ -1,20 +1,19 @@
 <?php
 session_start();
+require_once __DIR__ . '/db.php';
 
 $roomId         = $_SESSION['room_id'] ?? 1;
-$sharedRoomFile = "shared_room_{$roomId}.json";
-$sharedFile     = "shared_game_{$roomId}.json";
+$roomId = (int)$roomId;
 
-if (!file_exists($sharedRoomFile) || !file_exists($sharedFile)) {
-    header("Location: room.php"); exit();
-}
-
-$roomData = json_decode(file_get_contents($sharedRoomFile), true);
+$roomData = getRoom($roomId);
 if (!($roomData['joueur1'] ?? null) || !($roomData['joueur2'] ?? null)) {
     header("Location: room.php"); exit();
 }
+if ($roomData['joueur1'] !== ($_SESSION['username'] ?? null) && $roomData['joueur2'] !== ($_SESSION['username'] ?? null)) {
+    header("Location: login.php"); exit();
+}
 
-$etat = json_decode(file_get_contents($sharedFile), true);
+$etat = getGameState($roomId);
 if (!$etat) {
     header("Location: room.php"); exit();
 }

@@ -1,0 +1,44 @@
+CREATE DATABASE IF NOT EXISTS histoire_quiz
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE histoire_quiz;
+
+CREATE TABLE IF NOT EXISTS rooms (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  joueur1 VARCHAR(50) NULL,
+  joueur2 VARCHAR(50) NULL,
+  avatar1 VARCHAR(20) NULL,
+  avatar2 VARCHAR(20) NULL,
+  partie_lancee TINYINT(1) NOT NULL DEFAULT 0,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_rooms_disponibles (partie_lancee, joueur1, joueur2)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS games (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  room_id INT UNSIGNED NOT NULL,
+  manche TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  question_actuelle TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  score_joueur1 SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  score_joueur2 SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  manches_gagnees_j1 TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  manches_gagnees_j2 TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  manches_resultats JSON NULL,
+  theme_manche VARCHAR(100) NULL,
+  themes_utilises JSON NULL,
+  questions_manches JSON NULL,
+  reponses JSON NULL,
+  score_calcule JSON NULL,
+  manche_terminee TINYINT(1) NOT NULL DEFAULT 0,
+  question_result_until INT UNSIGNED NULL,
+  question_start_time INT UNSIGNED NULL,
+  start_time INT UNSIGNED NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY uniq_games_room (room_id),
+  CONSTRAINT fk_games_room
+    FOREIGN KEY (room_id) REFERENCES rooms(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

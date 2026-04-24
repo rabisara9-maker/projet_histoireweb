@@ -1,14 +1,12 @@
 <?php
 session_start();
+require_once __DIR__ . '/db.php';
 
 $roomId = $_SESSION['room_id'] ?? null;
 
-// Nettoyer les fichiers partagés de l'ancienne partie
+// Nettoyer les donnees SQL de l'ancienne partie
 if ($roomId) {
-    $sharedGameFile = "shared_game_{$roomId}.json";
-    $sharedRoomFile = "shared_room_{$roomId}.json";
-    if (file_exists($sharedGameFile)) unlink($sharedGameFile);
-    if (file_exists($sharedRoomFile)) unlink($sharedRoomFile);
+    deleteRoomAndGame((int)$roomId);
 }
 
 // CORRECTION BUG #8 : réinitialiser les données de jeu dans la session

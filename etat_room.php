@@ -1,17 +1,17 @@
 <?php
 // etat_room.php - Retourne l'état de la room en JSON (pour le polling JS)
 session_start();
+require_once __DIR__ . '/db.php';
 header('Content-Type: application/json');
 
 $roomId         = $_SESSION['room_id'] ?? 1;
-$sharedRoomFile = "shared_room_{$roomId}.json";
+$room = getRoom((int)$roomId);
 
-if (file_exists($sharedRoomFile)) {
-    $data = json_decode(file_get_contents($sharedRoomFile), true);
+if ($room) {
     echo json_encode([
-        'joueur1'       => $data['joueur1']       ?? null,
-        'joueur2'       => $data['joueur2']       ?? null,
-        'partie_lancee' => !empty($data['partie_lancee']),
+        'joueur1'       => $room['joueur1']       ?? null,
+        'joueur2'       => $room['joueur2']       ?? null,
+        'partie_lancee' => !empty($room['partie_lancee']),
     ]);
 } else {
     echo json_encode(['joueur1'=>null,'joueur2'=>null,'partie_lancee'=>false]);

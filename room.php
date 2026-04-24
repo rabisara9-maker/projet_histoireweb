@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/db.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: login.php"); exit();
@@ -9,35 +10,12 @@ $username = $_SESSION['username'];
 $avatar   = $_SESSION['avatar'] ?? 'default';
 $roomId   = $_SESSION['room_id'] ?? 1;
 
-$sharedRoomFile = "shared_room_{$roomId}.json";
+$room = joinRoom((int)$roomId, $username, $avatar);
 
-function lireRoomPartage() {
-    global $sharedRoomFile;
-    if (file_exists($sharedRoomFile)) {
-        $d = json_decode(file_get_contents($sharedRoomFile), true);
-        return is_array($d) ? $d : [];
-    }
-    return ['joueur1'=>null,'joueur2'=>null,'avatar1'=>null,'avatar2'=>null,'partie_lancee'=>false];
-}
-function ecrireRoomPartage($room) {
-    global $sharedRoomFile;
-    $tmp = $sharedRoomFile . '.tmp.' . getmypid();
-    file_put_contents($tmp, json_encode($room));
-    rename($tmp, $sharedRoomFile);
-}
-
-$room = lireRoomPartage();
-
-// Inscrire le joueur dans la room
-if (!$room['joueur1']) {
-    $room['joueur1'] = $username;
-    $room['avatar1'] = $avatar;
-    $room['partie_lancee'] = false;
-    ecrireRoomPartage($room);
-} elseif ($room['joueur1'] !== $username && !$room['joueur2']) {
-    $room['joueur2'] = $username;
-    $room['avatar2'] = $avatar;
-    ecrireRoomPartage($room);
+if (($room['joueur1'] ?? null) !== $username && ($room['joueur2'] ?? null) !== $username) {
+    $_SESSION['room_id'] = findAvailableRoomId();
+    header("Location: room.php");
+    exit();
 }
 
 // CORRECTION BUG #9 : détecter le lancement côté serveur pour synchroniser
@@ -48,12 +26,10 @@ if (!empty($room['partie_lancee'])) {
 
 // Traitement du bouton "Commencer"
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'start') {
-    $room = lireRoomPartage();
-    if ($room['joueur1'] && $room['joueur2']) {
-        $room['partie_lancee'] = true;
-        ecrireRoomPartage($room);
+    if (startRoomIfReady((int)$roomId)) {
         header("Location: quiz.php"); exit();
     }
+    $room = getRoom((int)$roomId);
 }
 
 $joueur1     = $room['joueur1'] ?? null;

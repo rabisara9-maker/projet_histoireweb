@@ -2,6 +2,7 @@
 /*Rôle : collecter les infos du joueur, lui attribuer une room,
   puis rediriger vers room.php (salle d'attente). */
 session_start();
+require_once __DIR__ . '/db.php';
 
 
 /* --------------------------------------------------------------------------
@@ -49,36 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
    avec de la place. Si aucune n'est disponible, en crée une nouvelle.
    -------------------------------------------------------------------------- */
 function trouverRoomDisponible(): int{
-    $roomId = 1;
-
-    while (true) {
-        $fichier = "shared_room_{$roomId}.json";
-
-        // Aucun fichier → room vierge, on la crée et on la retourne
-        if (!file_exists($fichier)) {
-            $nouvelleRoom = [
-                'joueur1'       => null,
-                'joueur2'       => null,
-                'avatar1'       => null,
-                'avatar2'       => null,
-                'partie_lancee' => false,
-            ];
-            file_put_contents($fichier, json_encode($nouvelleRoom));
-            return $roomId;
-        }
-
-        // La room existe : vérifier si elle a encore de la place
-        $room = json_decode(file_get_contents($fichier), true);
-        $aDePlace      = !$room['joueur1'] || !$room['joueur2'];
-        $partieEnCours = !empty($room['partie_lancee']);
-
-        if ($aDePlace && !$partieEnCours) {
-            return $roomId;
-        }
-
-        // Room pleine ou partie déjà lancée → essayer la suivante
-        $roomId++;
-    }
+    return findAvailableRoomId();
 }
 
 /* --------------------------------------------------------------------------

@@ -1,41 +1,33 @@
 <?php
 session_start();
+require_once __DIR__ . '/db.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
 
-$roomId = $_SESSION['room_id'] ?? 1;
-$sharedRoomFile = "shared_room_{$roomId}.json";
-$sharedFile     = "shared_game_{$roomId}.json";
+$roomId = (int)($_SESSION['room_id'] ?? 1);
 
 // ── Fonctions ────────────────────────────────────────────────────────────────
 function lireEtatPartage() {
-    global $sharedFile;
-    if (file_exists($sharedFile)) {
-        $data = json_decode(file_get_contents($sharedFile), true);
-        return is_array($data) ? $data : [];
-    }
-    return [];
+    global $roomId;
+    return getGameState($roomId);
 }
 
 function ecrireEtatPartage($etat) {
-    global $sharedFile;
-    $tmp = $sharedFile . '.tmp.' . getmypid();
-    file_put_contents($tmp, json_encode($etat));
-    rename($tmp, $sharedFile);
+    global $roomId;
+    saveGameState($roomId, $etat);
 }
 
 // ── Vérifications session / room ─────────────────────────────────────────────
-if (!file_exists($sharedRoomFile)) {
+$roomData = getRoom($roomId);
+if (!($roomData['joueur1'] ?? null) || !($roomData['joueur2'] ?? null)) {
     header("Location: room.php");
     exit();
 }
-
-$roomData = json_decode(file_get_contents($sharedRoomFile), true);
-if (!($roomData['joueur1'] ?? null) || !($roomData['joueur2'] ?? null)) {
-    header("Location: room.php");
+if ($roomData['joueur1'] !== $_SESSION['username'] && $roomData['joueur2'] !== $_SESSION['username']) {
+    header("Location: login.php");
     exit();
 }
 
@@ -43,21 +35,7 @@ if (!($roomData['joueur1'] ?? null) || !($roomData['joueur2'] ?? null)) {
 $QUESTIONS_PAR_MANCHE = 8;
 $NB_MANCHES = 3;
 
-$defaultEtat = [
-    'manche'              => 1,
-    'score_joueur1'       => 0,
-    'score_joueur2'       => 0,
-    'manches_gagnees_j1'  => 0,
-    'manches_gagnees_j2'  => 0,
-    'questions_manches'   => [],
-    'theme_manche'        => null,
-    'themes_utilises'     => [],
-    'question_actuelle'   => 0,
-    'reponses'            => [],
-    'score_calcule'       => [],
-    'manche_terminee'     => false,
-    'start_time'          => time() + 3,
-];
+$defaultEtat = defaultGameState();
 
 $etat = lireEtatPartage();
 if (empty($etat)) {
@@ -151,11 +129,17 @@ $scoreAdverse = (int)($etat['score_' . $joueurAdv] ?? 0);
 
 $manchesJ = (int)($etat['manches_gagnees_' . ($joueur === 'joueur1' ? 'j1' : 'j2')] ?? 0);
 $manchesAdv = (int)($etat['manches_gagnees_' . ($joueur === 'joueur1' ? 'j2' : 'j1')] ?? 0);
+$manchesResultats = $etat['manches_resultats'] ?? [];
 
 // ── Question actuelle ────────────────────────────────────────────────────────
 $questionIndex   = (int)($etat['question_actuelle'] ?? 0);
 $questionsManche = $etat['questions_manches'][$mancheKey] ?? [];
 $totalQuestions  = count($questionsManche);
+
+if (advanceExpiredQuestionResult($roomId)) {
+    header("Location: quiz.php");
+    exit();
+}
 
 // ── Fin de manche ────────────────────────────────────────────────────────────
 if ($questionIndex >= $totalQuestions && $totalQuestions > 0) {
@@ -213,10 +197,15 @@ if (!empty($etat['manche_terminee'])) {
         }
 
         // Déterminer le gagnant de la manche
+        $etat['manches_resultats'] = $etat['manches_resultats'] ?? [];
         if ($etat['score_joueur1'] > $etat['score_joueur2']) {
             $etat['manches_gagnees_j1']++;
+            $etat['manches_resultats'][$mancheKey] = 'joueur1';
         } elseif ($etat['score_joueur2'] > $etat['score_joueur1']) {
             $etat['manches_gagnees_j2']++;
+            $etat['manches_resultats'][$mancheKey] = 'joueur2';
+        } else {
+            $etat['manches_resultats'][$mancheKey] = 'egalite';
         }
 
         // Fin de partie
@@ -239,6 +228,7 @@ if (!empty($etat['manche_terminee'])) {
         $etat['score_calcule'] = [];
         $etat['manche_terminee'] = false;
         $etat['theme_manche'] = null;
+        $etat['question_result_until'] = null;
 
         $nouvelleMancheKey = (string)$etat['manche'];
         if (!isset($etat['questions_manches'][$nouvelleMancheKey])) {
@@ -264,6 +254,11 @@ if (!empty($etat['manche_terminee'])) {
 $currentQuestion = $questionsManche[$questionIndex] ?? [];
 $theme           = $etat['theme_manche'] ?? 'Thème';
 $dejaRepondu     = isset($etat['reponses'][$questionIndex][$joueur]);
+$resultatQuestion = $etat['score_calcule'][$questionIndex] ?? null;
+$afficherResultat = is_array($resultatQuestion);
+$lettreCorrecte = $afficherResultat ? ($resultatQuestion['correct'] ?? '') : '';
+$reponseJoueur = $etat['reponses'][$questionIndex][$joueur] ?? '';
+$bonneReponseJoueur = $afficherResultat && $reponseJoueur !== '' && $reponseJoueur === $lettreCorrecte;
 
 // ── Calcul du temps restant RÉEL (résiste aux actualisations) ─────────────────
 $TIMER_DUREE     = 30;
@@ -348,6 +343,33 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
     color: #fff7ed;
     border-color: #facc15;
   }
+
+  .answer-btn.correct {
+    background: linear-gradient(135deg, #15803d, #22c55e);
+    color: #f0fdf4;
+    border-color: #86efac;
+  }
+
+  .answer-btn.wrong {
+    background: linear-gradient(135deg, #991b1b, #ef4444);
+    color: #fff7ed;
+    border-color: #fecaca;
+  }
+
+  .result-msg {
+    text-align: center;
+    padding: 18px 0 24px;
+    color: #fff7ed;
+    font-weight: bold;
+  }
+
+  .result-msg.good {
+    color: #86efac;
+  }
+
+  .result-msg.bad {
+    color: #fecaca;
+  }
 </style>
 </head>
 <body>
@@ -362,7 +384,7 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
       <div class="timer-box">
         <p>Temps restant</p>
         <div class="timer-bar"><div class="timer-fill" id="timerBar"></div></div>
-        <span id="timer"><?= $dejaRepondu ? 'Répondu ✓' : $tempsRestant . ' s' ?></span>
+        <span id="timer"><?= $afficherResultat ? 'Résultat' : ($dejaRepondu ? 'Répondu ✓' : $tempsRestant . ' s') ?></span>
       </div>
     </header>
 
@@ -373,8 +395,11 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
         <p class="player-name"><?= htmlspecialchars($nomJoueur) ?></p>
         <p class="score">Score manche : <?= $scoreJoueur ?></p>
         <div class="manches-bar" style="justify-content:center;margin-top:8px;">
-          <?php for ($i = 0; $i < 3; $i++): $won = ($i < $manchesJ); ?>
-            <div class="manche-dot <?= $won ? 'won' : '' ?>">M<?= $i + 1 ?></div>
+          <?php for ($i = 0; $i < 3; $i++):
+              $roundWinner = $manchesResultats[(string)($i + 1)] ?? null;
+              $roundClass = ($roundWinner === $joueur) ? 'won' : (($roundWinner && $roundWinner !== 'egalite') ? 'lost' : '');
+          ?>
+            <div class="manche-dot <?= $roundClass ?>">M<?= $i + 1 ?></div>
           <?php endfor; ?>
         </div>
       </div>
@@ -387,8 +412,11 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
         <p class="player-name"><?= htmlspecialchars($nomAdverse) ?></p>
         <p class="score">Score manche : <?= $scoreAdverse ?></p>
         <div class="manches-bar" style="justify-content:center;margin-top:8px;">
-          <?php for ($i = 0; $i < 3; $i++): $won = ($i < $manchesAdv); ?>
-            <div class="manche-dot <?= $won ? 'won' : '' ?>">M<?= $i + 1 ?></div>
+          <?php for ($i = 0; $i < 3; $i++):
+              $roundWinner = $manchesResultats[(string)($i + 1)] ?? null;
+              $roundClass = ($roundWinner === $joueurAdv) ? 'won' : (($roundWinner && $roundWinner !== 'egalite') ? 'lost' : '');
+          ?>
+            <div class="manche-dot <?= $roundClass ?>">M<?= $i + 1 ?></div>
           <?php endfor; ?>
         </div>
       </div>
@@ -398,7 +426,35 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
       <p class="question-number">Question <?= $questionIndex + 1 ?> / <?= $totalQuestions ?></p>
       <h1 class="question"><?= htmlspecialchars($currentQuestion['question'] ?? '') ?></h1>
 
-      <?php if ($deuxReponses): ?>
+      <?php if ($afficherResultat): ?>
+        <div class="result-msg <?= $bonneReponseJoueur ? 'good' : 'bad' ?>">
+          <?= $bonneReponseJoueur ? 'Bonne réponse !' : 'Mauvaise réponse.' ?>
+          <?php if ($lettreCorrecte): ?>
+            La bonne réponse était <?= htmlspecialchars($lettreCorrecte) ?>.
+          <?php endif; ?>
+        </div>
+
+        <div class="answers" style="margin-top:10px;pointer-events:none;">
+          <?php foreach ($currentQuestion['options'] as $i => $option):
+              $lettre = chr(65 + $i);
+              $cls = 'disabled';
+              if ($lettre === $lettreCorrecte) {
+                  $cls .= ' correct';
+              } elseif ($lettre === $reponseJoueur) {
+                  $cls .= ' wrong';
+              }
+          ?>
+            <button class="answer-btn <?= $cls ?>" disabled>
+              <?= $lettre ?>. <?= htmlspecialchars($option) ?>
+            </button>
+          <?php endforeach; ?>
+        </div>
+
+        <script>
+          setTimeout(() => location.reload(), 3200);
+        </script>
+
+      <?php elseif ($deuxReponses): ?>
         <div class="waiting-msg">
           <div class="spinner"></div>
           <p>Les deux joueurs ont répondu. Passage à la suivante…</p>
@@ -453,7 +509,7 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
 </div>
 
 <script>
-<?php if (!$dejaRepondu): ?>
+<?php if (!$dejaRepondu && !$afficherResultat): ?>
 (function() {
   const TOTAL = 30;
   // Temps restant RÉEL calculé côté serveur — résiste aux actualisations de page
@@ -488,7 +544,7 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
     }
   }, 1000);
 })();
-<?php else: ?>
+<?php elseif (!$afficherResultat): ?>
 (function() {
   const qIndex = <?= $questionIndex ?>;
   const mancheCourante = <?= $manche ?>;
