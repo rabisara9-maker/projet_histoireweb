@@ -4,6 +4,7 @@
 session_start();
 require_once __DIR__ . '/db.php';
 
+cleanOldRooms();
 
 /* --------------------------------------------------------------------------
    TRAITEMENT DU FORMULAIRE (méthode POST)
@@ -44,11 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 
-/* --------------------------------------------------------------------------
-   FONCTION : trouverRoomDisponible()
-   Parcourt les fichiers shared_room_N.json pour trouver une room
-   avec de la place. Si aucune n'est disponible, en crée une nouvelle.
-   -------------------------------------------------------------------------- */
 function trouverRoomDisponible(): int{
     return findAvailableRoomId();
 }

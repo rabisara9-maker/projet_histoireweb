@@ -18,8 +18,7 @@ if (($room['joueur1'] ?? null) !== $username && ($room['joueur2'] ?? null) !== $
     exit();
 }
 
-// CORRECTION BUG #9 : détecter le lancement côté serveur pour synchroniser
-// Si la partie est marquée lancée, rediriger immédiatement
+// Si la partie est déjà lancée, le joueur rejoint directement le quiz.
 if (!empty($room['partie_lancee'])) {
     header("Location: quiz.php"); exit();
 }
@@ -34,6 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 $joueur1     = $room['joueur1'] ?? null;
 $joueur2     = $room['joueur2'] ?? null;
+$avatar1     = $room['avatar1'] ?? '👤';
+$avatar2     = $room['avatar2'] ?? '👤';
 $deuxJoueurs = $joueur1 && $joueur2;
 ?>
 <!DOCTYPE html>
@@ -42,7 +43,7 @@ $deuxJoueurs = $joueur1 && $joueur2;
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quiz Battle – Salle d'attente</title>
-  <link rel="stylesheet" href="waiting-room.css"/>
+  <link rel="stylesheet" href="waiting-room.css?v=2"/>
 </head>
 <body>
 <div class="page">
@@ -54,14 +55,14 @@ $deuxJoueurs = $joueur1 && $joueur2;
 
     <section class="room-box">
       <p>Code de la room : <strong><?= htmlspecialchars((string)$roomId) ?></strong></p>
-      <p style="font-size:.85rem;color:#dbeafe;margin-top:6px;">
+      <p class="room-note">
         Partagez ce code à votre adversaire pour qu'il rejoigne la même room.
       </p>
     </section>
 
     <section class="players">
       <div class="player-card">
-        <div class="avatar">👤</div>
+        <div class="avatar"><?= htmlspecialchars($avatar1) ?></div>
         <h2>Joueur 1</h2>
         <p class="player-name"><?= htmlspecialchars($joueur1 ?? 'En attente…') ?></p>
         <p class="status <?= $joueur1 ? 'status-online' : 'status-offline' ?>">
@@ -72,7 +73,7 @@ $deuxJoueurs = $joueur1 && $joueur2;
       <div class="versus">VS</div>
 
       <div class="player-card">
-        <div class="avatar">👤</div>
+        <div class="avatar"><?= htmlspecialchars($avatar2) ?></div>
         <h2>Joueur 2</h2>
         <p class="player-name"><?= htmlspecialchars($joueur2 ?? 'En attente…') ?></p>
         <p class="status <?= $joueur2 ? 'status-online' : 'status-offline' ?>">
@@ -92,13 +93,12 @@ $deuxJoueurs = $joueur1 && $joueur2;
     </section>
 
     <?php if ($deuxJoueurs): ?>
-      <!-- CORRECTION BUG #9 : n'importe quel joueur peut lancer -->
       <form action="room.php" method="POST">
         <input type="hidden" name="action" value="start">
         <button class="start-btn" type="submit">⚔️ Commencer la partie</button>
       </form>
     <?php else: ?>
-      <p style="text-align:center;color:#dbeafe;">En attente d'un deuxième joueur…</p>
+      <p class="wait-message">En attente d'un deuxième joueur…</p>
     <?php endif; ?>
   </div>
 </div>

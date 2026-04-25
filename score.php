@@ -18,9 +18,6 @@ if (!$etat) {
     header("Location: room.php"); exit();
 }
 
-// CORRECTION BUG #5 : la page score est maintenant accessible dès que quiz.php
-// redirige ici — on ne vérifie plus juste $manche < 3
-
 $joueur1 = $roomData['joueur1'];
 $joueur2 = $roomData['joueur2'];
 
@@ -50,15 +47,25 @@ $jaiGagne = ($gagnant === $_SESSION['username']);
   <style>
     .results-card {
       width:100%; max-width:700px;
-      background:rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:18px; padding:40px 32px;
+      background:rgba(41, 24, 12, .88);
+      border:2px solid #c0842d;
+      border-radius:22px; padding:40px 32px;
       text-align:center;
-      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      box-shadow:0 0 35px rgba(245,158,11,.25), 0 18px 45px rgba(0,0,0,.55);
+      position:relative;
+      overflow:hidden;
+    }
+    .results-card::before {
+      content:"⚜";
+      position:absolute;
+      top:-27px;
+      right:22px;
+      font-size:8rem;
+      color:rgba(250,204,21,.08);
     }
     .trophy { font-size:5rem; margin-bottom:12px; }
-    .result-title { font-size:2rem; margin-bottom:8px; }
-    .result-subtitle { color:#dbeafe; margin-bottom:32px; }
+    .result-title { font-size:2rem; margin-bottom:8px; color:#facc15; }
+    .result-subtitle { color:#fde68a; margin-bottom:32px; }
 
     .scores-row {
       display:flex; align-items:center; justify-content:center;
@@ -66,30 +73,31 @@ $jaiGagne = ($gagnant === $_SESSION['username']);
     }
     .score-box {
       flex:1; max-width:200px;
-      background:rgba(255,255,255,.08);
+      background:rgba(255,247,237,.10);
+      border:1px solid rgba(250,204,21,.35);
       border-radius:14px; padding:20px;
     }
-    .score-box h3 { margin-bottom:8px; font-size:1.1rem; }
+    .score-box h3 { margin-bottom:8px; font-size:1.1rem; color:#facc15; }
     .score-box .big { font-size:2.5rem; font-weight:bold; color:#facc15; }
-    .score-box .sub { color:#dbeafe; font-size:.9rem; margin-top:4px; }
-    .score-box.winner { border:2px solid #22c55e; }
-    .versus-txt { font-size:1.8rem; font-weight:bold; }
+    .score-box .sub { color:#ffedd5; font-size:.9rem; margin-top:4px; }
+    .score-box.winner { border:2px solid #22c55e; box-shadow:0 0 18px rgba(34,197,94,.25); }
+    .versus-txt { font-size:1.8rem; font-weight:bold; color:#facc15; }
 
     .btn-group { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
     .btn-rejouer {
-      padding:14px 32px; border:none; border-radius:10px;
-      background:#22c55e; color:#fff;
+      padding:14px 32px; border:none; border-radius:12px;
+      background:linear-gradient(135deg, #d97706, #facc15); color:#1c1208;
       font-size:1rem; font-weight:bold; cursor:pointer;
       text-decoration:none; transition:.25s;
     }
-    .btn-rejouer:hover { transform:translateY(-2px); }
+    .btn-rejouer:hover { transform:translateY(-3px); box-shadow:0 10px 20px rgba(0,0,0,.35); }
     .btn-accueil {
-      padding:14px 32px; border:1px solid rgba(255,255,255,.3); border-radius:10px;
-      background:transparent; color:#fff;
+      padding:14px 32px; border:1px solid rgba(250,204,21,.45); border-radius:12px;
+      background:rgba(255,247,237,.08); color:#fff7ed;
       font-size:1rem; font-weight:bold; cursor:pointer;
       text-decoration:none; transition:.25s;
     }
-    .btn-accueil:hover { background:rgba(255,255,255,.1); }
+    .btn-accueil:hover { background:rgba(255,247,237,.16); transform:translateY(-3px); }
   </style>
 </head>
 <body>
@@ -130,7 +138,7 @@ $jaiGagne = ($gagnant === $_SESSION['username']);
 
     <div class="btn-group">
       <a href="rejouer.php" class="btn-rejouer">🔄 Rejouer</a>
-      <a href="login.php"   class="btn-accueil">🏠 Accueil</a>
+      <a href="quitter.php" class="btn-accueil">🏠 Accueil</a>
     </div>
 
   </div>

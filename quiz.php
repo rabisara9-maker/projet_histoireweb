@@ -257,6 +257,10 @@ $dejaRepondu     = isset($etat['reponses'][$questionIndex][$joueur]);
 $resultatQuestion = $etat['score_calcule'][$questionIndex] ?? null;
 $afficherResultat = is_array($resultatQuestion);
 $lettreCorrecte = $afficherResultat ? ($resultatQuestion['correct'] ?? '') : '';
+$indexCorrect = $lettreCorrecte ? (ord($lettreCorrecte) - 65) : null;
+$texteBonneReponse = isset($currentQuestion['options'][$indexCorrect])
+    ? $currentQuestion['options'][$indexCorrect]
+    : '';
 $reponseJoueur = $etat['reponses'][$questionIndex][$joueur] ?? '';
 $bonneReponseJoueur = $afficherResultat && $reponseJoueur !== '' && $reponseJoueur === $lettreCorrecte;
 
@@ -430,7 +434,10 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
         <div class="result-msg <?= $bonneReponseJoueur ? 'good' : 'bad' ?>">
           <?= $bonneReponseJoueur ? 'Bonne réponse !' : 'Mauvaise réponse.' ?>
           <?php if ($lettreCorrecte): ?>
-            La bonne réponse était <?= htmlspecialchars($lettreCorrecte) ?>.
+            La bonne réponse était <?= htmlspecialchars($lettreCorrecte) ?>
+            <?php if ($texteBonneReponse): ?>
+              : <?= htmlspecialchars($texteBonneReponse) ?>
+            <?php endif; ?>.
           <?php endif; ?>
         </div>
 

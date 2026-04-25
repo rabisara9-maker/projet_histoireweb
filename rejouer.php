@@ -9,8 +9,7 @@ if ($roomId) {
     deleteRoomAndGame((int)$roomId);
 }
 
-// CORRECTION BUG #8 : réinitialiser les données de jeu dans la session
-// tout en conservant le pseudo et la langue
+// On repart sur une session propre en gardant le pseudo et la langue.
 $username = $_SESSION['username'] ?? null;
 $language = $_SESSION['language'] ?? 'fr';
 

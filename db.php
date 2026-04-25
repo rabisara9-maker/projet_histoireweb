@@ -269,3 +269,19 @@ function deleteRoomAndGame(int $roomId): void {
     $stmt = db()->prepare("DELETE FROM rooms WHERE id = ?");
     $stmt->execute([$roomId]);
 }
+
+function cleanOldRooms(): void {
+    $pdo = db();
+
+    $pdo->exec(
+        "DELETE FROM rooms
+         WHERE partie_lancee = 0
+           AND updated_at < DATE_SUB(NOW(), INTERVAL 30 MINUTE)"
+    );
+
+    $pdo->exec(
+        "DELETE FROM rooms
+         WHERE partie_lancee = 1
+           AND updated_at < DATE_SUB(NOW(), INTERVAL 2 HOUR)"
+    );
+}

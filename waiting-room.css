@@ -5,10 +5,12 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: Georgia, "Times New Roman", serif;
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a, #1e40af);
-  color: #ffffff;
+  background:
+    radial-gradient(circle at top, rgba(250, 204, 21, 0.22), transparent 35%),
+    linear-gradient(135deg, #1c1208, #3b2412 45%, #111827);
+  color: #fff7ed;
 }
 
 .page {
@@ -22,11 +24,24 @@ body {
 .card {
   width: 100%;
   max-width: 920px;
-  background: rgba(255, 255, 255, 0.10);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 18px;
+  background: rgba(41, 24, 12, 0.88);
+  border: 2px solid #c0842d;
+  border-radius: 22px;
   padding: 32px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 0 35px rgba(245, 158, 11, 0.25),
+    0 18px 45px rgba(0, 0, 0, 0.55);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "⚜";
+  position: absolute;
+  top: -27px;
+  right: 24px;
+  font-size: 8rem;
+  color: rgba(250, 204, 21, 0.08);
 }
 
 .card-header {
@@ -37,20 +52,42 @@ body {
 .card-header h1 {
   font-size: 2.1rem;
   margin-bottom: 10px;
+  color: #facc15;
+  text-shadow: 0 0 12px rgba(250, 204, 21, 0.35);
 }
 
 .card-header p {
-  color: #dbeafe;
+  color: #fde68a;
   line-height: 1.6;
 }
 
 .room-box {
   text-align: center;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 247, 237, 0.10);
+  border: 1px solid rgba(250, 204, 21, 0.35);
   padding: 14px;
-  border-radius: 10px;
+  border-radius: 14px;
   margin-bottom: 24px;
   font-size: 1.05rem;
+}
+
+.room-box strong {
+  color: #facc15;
+  font-size: 1.35rem;
+}
+
+.room-note,
+.wait-message {
+  color: #fde68a;
+}
+
+.room-note {
+  font-size: .9rem;
+  margin-top: 6px;
+}
+
+.wait-message {
+  text-align: center;
 }
 
 .players {
@@ -64,9 +101,11 @@ body {
 .player-card {
   flex: 1;
   text-align: center;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  background: rgba(255, 247, 237, 0.10);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 18px;
   padding: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
 }
 
 .avatar {
@@ -77,39 +116,44 @@ body {
 .player-card h2 {
   margin-bottom: 10px;
   font-size: 1.3rem;
+  color: #facc15;
 }
 
 .player-name {
   margin-bottom: 10px;
-  color: #dbeafe;
+  color: #ffedd5;
   font-size: 1.05rem;
 }
 
 .status {
   display: inline-block;
   padding: 8px 14px;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: bold;
   font-size: 0.95rem;
 }
 
 .status-online {
-  background: #22c55e;
+  background: #166534;
+  color: #dcfce7;
 }
 
 .status-offline {
-  background: #ef4444;
+  background: #7f1d1d;
+  color: #fee2e2;
 }
 
 .versus {
   font-size: 1.8rem;
   font-weight: bold;
-  color: #f8fafc;
+  color: #facc15;
+  text-shadow: 0 0 12px rgba(250, 204, 21, 0.45);
 }
 
 .info-box {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  background: rgba(255, 247, 237, 0.10);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  border-radius: 14px;
   padding: 20px;
   margin-bottom: 24px;
 }
@@ -117,6 +161,7 @@ body {
 .info-box h2 {
   font-size: 1.2rem;
   margin-bottom: 12px;
+  color: #facc15;
 }
 
 .info-box ul {
@@ -126,24 +171,27 @@ body {
 .info-box li {
   margin-bottom: 8px;
   line-height: 1.5;
-  color: #e5e7eb;
+  color: #ffedd5;
 }
 
 .start-btn {
   width: 100%;
   padding: 14px;
   border: none;
-  border-radius: 10px;
-  background: #22c55e;
-  color: white;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #d97706, #facc15);
+  color: #1c1208;
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
   transition: 0.25s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .start-btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.35);
 }
 
 @media (max-width: 768px) {
