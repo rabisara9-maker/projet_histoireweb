@@ -1,11 +1,3 @@
 .env
 *.log
-
-# Fichiers système / éditeurs
-.DS_Store
-Thumbs.db
 .vscode/
-
-# Dépendances éventuelles si le projet évolue
-vendor/
-node_modules/
