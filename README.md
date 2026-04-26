@@ -22,10 +22,10 @@ Quiz Battle est un petit jeu de quiz en PHP. Deux joueurs rejoignent une room, r
 
 ## Contenu du rendu
 
-- Code source du projet
+- Code source du projet (apres)
 - Fichier `database.sql`
-- Diagramme d'architecture : voir `ARCHITECTURE.md`
-- Vidéo de démonstration de 5 à 7 minutes
+- Diagramme d'architecture : voir `architecture.drawio`
+- Vidéo(apres)
 
 ## Installation
 
