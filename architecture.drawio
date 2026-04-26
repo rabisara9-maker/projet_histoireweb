@@ -1,0 +1,177 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Architecture Quiz Battle" id="quiz-battle-td-style">
+    <mxGraphModel dx="1688" dy="828" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;fontSize=28;fontStyle=1;fontColor=#1c1208;" value="Architecture du projet - Quiz Battle" vertex="1">
+          <mxGeometry height="42" width="540" x="320" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="browser1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#c0842d;fontSize=15;fontStyle=1;" value="Navigateur joueur 1&#xa;session PHP" vertex="1">
+          <mxGeometry height="70" width="170" x="10" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="browser2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#c0842d;fontSize=15;fontStyle=1;" value="Navigateur joueur 2&#xa;session PHP" vertex="1">
+          <mxGeometry height="70" width="170" x="10" y="205" as="geometry" />
+        </mxCell>
+        <mxCell id="login" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fde68a;strokeColor=#7c2d12;fontSize=14;" value="login.php&#xa;&#xa;Pseudo&#xa;Âge&#xa;Avatar&#xa;Code room optionnel" vertex="1">
+          <mxGeometry height="135" width="145" x="370" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="room" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fde68a;strokeColor=#7c2d12;fontSize=14;" value="room.php&#xa;&#xa;Salle d&#39;attente&#xa;Joueur 1 / Joueur 2&#xa;Code room&#xa;Bouton commencer" vertex="1">
+          <mxGeometry height="135" width="155" x="620" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="quiz" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fde68a;strokeColor=#7c2d12;fontSize=14;" value="quiz.php&#xa;&#xa;Affiche question&#xa;Timer 30 s&#xa;Scores manche&#xa;Avatars joueurs" vertex="1">
+          <mxGeometry height="135" width="155" x="910" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="score" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fde68a;strokeColor=#7c2d12;fontSize=14;" value="score.php&#xa;&#xa;Résultat final&#xa;Manches gagnées&#xa;Rejouer / Accueil" vertex="1">
+          <mxGeometry height="135" width="155" x="1250" y="100" as="geometry" />
+        </mxCell>
+        <mxCell id="replay" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#c0842d;fontSize=13;" value="rejouer.php&#xa;supprime ancienne room&#xa;garde pseudo/avatar&#xa;nouvelle room" vertex="1">
+          <mxGeometry height="95" width="175" x="1150" y="356" as="geometry" />
+        </mxCell>
+        <mxCell id="quit" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#c0842d;fontSize=13;" value="quitter.php&#xa;supprime room&#xa;détruit session" vertex="1">
+          <mxGeometry height="94" width="175" x="1370" y="356" as="geometry" />
+        </mxCell>
+        <mxCell id="ajaxQuiz" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontSize=13;" value="etat_quiz.php&#xa;AJAX pendant le quiz&#xa;réponses / question actuelle" vertex="1">
+          <mxGeometry height="85" width="140" x="780" y="365" as="geometry" />
+        </mxCell>
+        <mxCell id="dbphp" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontSize=13;" value="db.php&#xa;&#xa;Fonctions SQL :&#xa;findAvailableRoomId()&#xa;joinRoom()&#xa;getGameState()&#xa;saveGameState()&#xa;deleteRoomAndGame()" vertex="1">
+          <mxGeometry height="150" width="190" x="380" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="mysql" parent="1" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#dbeafe;strokeColor=#1d4ed8;fontSize=13;" value="Base MySQL : histoire_quiz&#xa;&#xa;rooms&#xa;- id&#xa;- joueur1 / joueur2&#xa;- avatar1 / avatar2&#xa;- partie_lancee&#xa;&#xa;games&#xa;- room_id&#xa;- manche&#xa;- question_actuelle&#xa;- scores&#xa;- réponses JSON" vertex="1">
+          <mxGeometry height="230" width="165" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="assets" parent="1" style="shape=folder;tabWidth=0;tabHeight=0;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#fce7f3;strokeColor=#be185d;fontSize=13;" value="assets/&#xa;&#xa;css : style du site&#xa;js : musique&#xa;audio : mp3" vertex="1">
+          <mxGeometry height="80" width="130" x="950" as="geometry" />
+        </mxCell>
+        <mxCell id="sessionNote" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fdf2f8;strokeColor=#be185d;fontSize=13;" value="Sessions PHP&#xa;username, age, avatar, room_id" vertex="1">
+          <mxGeometry height="85" width="145" x="50" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="koLogin" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#dc2626;fontSize=13;" value="KO login&#xa;pseudo vide&#xa;ou pseudo déjà utilisé" vertex="1">
+          <mxGeometry height="75" width="175" x="180" y="515" as="geometry" />
+        </mxCell>
+        <mxCell id="koRoom" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#dc2626;fontSize=13;" value="KO room&#xa;1 seul joueur&#xa;on reste en attente" vertex="1">
+          <mxGeometry height="75" width="175" x="585" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" edge="1" parent="1" source="browser1" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#7c2d12;fontSize=12;" target="login" value="ouvre le site">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" edge="1" parent="1" source="browser2" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#7c2d12;fontSize=12;" target="login" value="même site">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" edge="1" parent="1" source="login" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#7c2d12;fontSize=12;" target="room" value="formulaire OK">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" edge="1" parent="1" source="room" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#7c2d12;fontSize=12;" target="quiz" value="2 joueurs + commencer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a5" edge="1" parent="1" source="quiz" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#7c2d12;fontSize=12;" target="verify" value="réponse POST">
+          <mxGeometry relative="1" x="-0.0225" y="-23" as="geometry">
+            <mxPoint y="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a6" edge="1" parent="1" source="quiz" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#7c2d12;fontSize=12;" target="score" value="fin de partie">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a7" edge="1" parent="1" source="score" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#7c2d12;fontSize=12;" target="replay" value="rejouer">
+          <mxGeometry relative="1" x="-0.1111" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a8" edge="1" parent="1" source="score" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#7c2d12;fontSize=12;" target="quit" value="accueil">
+          <mxGeometry relative="1" x="0.1305" y="7" as="geometry">
+            <mxPoint x="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a9" edge="1" parent="1" source="replay" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#7c2d12;fontSize=12;" target="room" value="nouvelle room">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ko1" edge="1" parent="1" source="login" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#dc2626;fontSize=12;fontStyle=1;" target="koLogin" value="KO">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ko2" edge="1" parent="1" source="koLogin" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#dc2626;fontSize=12;" target="login" value="retour login.php">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ko3" edge="1" parent="1" source="room" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#dc2626;fontSize=12;fontStyle=1;" target="koRoom" value="KO">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ko4" edge="1" parent="1" source="koRoom" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#dc2626;fontSize=12;" target="room" value="attente">
+          <mxGeometry relative="1" x="-0.077" y="9" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ko5" edge="1" parent="1" source="quiz" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#dc2626;fontSize=12;fontStyle=1;" target="koQuiz" value="KO">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ko6" edge="1" parent="1" source="koQuiz" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#dc2626;fontSize=12;" target="login" value="redirige">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b1" edge="1" parent="1" source="room" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#0284c7;fontSize=12;" target="ajaxRoom" value="polling AJAX">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="b2" edge="1" parent="1" source="quiz" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#0284c7;fontSize=12;" target="ajaxQuiz" value="polling AJAX">
+          <mxGeometry relative="1" x="0.1001" y="-25" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c1" edge="1" parent="1" source="ajaxRoom" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#d97706;fontSize=12;" target="dbphp" value="utilise">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" edge="1" parent="1" source="room" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#d97706;fontSize=12;" target="dbphp" value="utilise">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" edge="1" parent="1" source="quiz" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#d97706;fontSize=12;" target="dbphp" value="utilise">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" edge="1" parent="1" source="dbphp" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#1d4ed8;fontSize=12;" target="mysql" value="SQL">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" edge="1" parent="1" source="login" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#be185d;fontSize=12;" target="sessionNote" value="sessions">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="c7" edge="1" parent="1" source="quiz" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#be185d;fontSize=12;" target="assets" value="styles / scripts / audio">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff7ed;strokeColor=#c0842d;fontSize=13;fontColor=#1c1208;" value="Légende : flèches marron = navigation PHP / flèches bleues = AJAX / flèches orange = fonctions SQL / flèche verte = fichier JSON / flèches rouges = cas KO." vertex="1">
+          <mxGeometry height="45" width="1030" x="230" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="koQuiz" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#dc2626;fontSize=13;" value="Accès refusé au quiz&#xa;pas de session&#xa;retour login.php" vertex="1">
+          <mxGeometry height="75" width="180" x="840" y="515" as="geometry" />
+        </mxCell>
+        <mxCell id="verify" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#c0842d;fontSize=13;" value="verifier_reponses.php&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Enregistre réponse&lt;br&gt;Calcule si les 2 ont répondu&lt;br&gt;Ajoute les points&lt;/div&gt;" vertex="1">
+          <mxGeometry height="130" width="170" x="1169" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="c6" edge="1" parent="1" source="verify" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#65a30d;fontSize=12;exitX=0;exitY=0.25;exitDx=0;exitDy=0;" target="questions" value="corrige avec questions.json">
+          <mxGeometry relative="1" x="-0.8398" y="51" as="geometry">
+            <mxPoint x="31" y="-57" as="offset" />
+            <Array as="points">
+              <mxPoint x="1150" y="580" />
+            </Array>
+            <mxPoint x="990" y="450" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="LIWf03O9ICai99cn225J-8" edge="1" parent="1" source="ajaxQuiz" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ajaxQuiz">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="LIWf03O9ICai99cn225J-9" edge="1" parent="1" source="login" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#d97706;fontSize=12;" target="ajaxRoom" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="418" y="235" as="sourcePoint" />
+            <mxPoint x="366" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ajaxRoom" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontSize=13;" value="etat_room.php&#xa;AJAX toutes les 2 s&#xa;attente du 2e joueur" vertex="1">
+          <mxGeometry height="85" width="175" x="355" y="395" as="geometry" />
+        </mxCell>
+        <mxCell id="LIWf03O9ICai99cn225J-4" edge="1" parent="1" source="quiz" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#65a30d;fontSize=12;" target="questions" value="lecture questions">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="815" y="240" as="sourcePoint" />
+            <mxPoint x="828" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="questions" parent="1" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ecfccb;strokeColor=#65a30d;fontSize=13;size=0.38461538461538464;" value="data/questions.json&lt;div&gt;&lt;br&gt;&lt;br&gt;Questions classées par thème :&lt;br&gt;Antiquité&lt;br&gt;Moyen Âge&lt;br&gt;Guerres mondiales&lt;br&gt;Histoire de l&#39;IA...&lt;/div&gt;" vertex="1">
+          <mxGeometry height="130" width="170" x="960" y="630" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

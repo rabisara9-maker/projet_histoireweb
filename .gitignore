@@ -1,11 +1,12 @@
 .env
 *.log
 
-# Fichiers système / éditeurs
+# Fichiers systeme / editeurs
 .DS_Store
 Thumbs.db
 .vscode/
+*.drawio.crswap
 
-# Dépendances éventuelles si le projet évolue
+# Dependances eventuelles si le projet evolue
 vendor/
 node_modules/
