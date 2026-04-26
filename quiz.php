@@ -9,7 +9,7 @@ if (!isset($_SESSION['username'])) {
 
 $roomId = (int)($_SESSION['room_id'] ?? 1);
 
-// ── Fonctions ────────────────────────────────────────────────────────────────
+// Petits raccourcis pour lire et sauvegarder l'état de la partie.
 function lireEtatPartage() {
     global $roomId;
     return getGameState($roomId);
@@ -20,7 +20,7 @@ function ecrireEtatPartage($etat) {
     saveGameState($roomId, $etat);
 }
 
-// ── Vérifications session / room ─────────────────────────────────────────────
+// On vérifie que le joueur appartient bien à cette room.
 $roomData = getRoom($roomId);
 if (!($roomData['joueur1'] ?? null) || !($roomData['joueur2'] ?? null)) {
     header("Location: room.php");
@@ -31,7 +31,7 @@ if ($roomData['joueur1'] !== $_SESSION['username'] && $roomData['joueur2'] !== $
     exit();
 }
 
-// ── Constantes du jeu ────────────────────────────────────────────────────────
+// Réglages principaux du quiz.
 $QUESTIONS_PAR_MANCHE = 8;
 $NB_MANCHES = 3;
 
@@ -48,8 +48,8 @@ if (empty($etat)) {
     }
 }
 
-// ── Chargement des questions ─────────────────────────────────────────────────
-$questions = json_decode(file_get_contents('questions.json'), true);
+// Les questions viennent du fichier JSON.
+$questions = json_decode(file_get_contents(__DIR__ . '/data/questions.json'), true);
 $themes    = array_values(array_unique(array_column($questions, 'theme')));
 
 function choisirThemeAleatoire($themes, $themesUtilises = []) {
@@ -85,7 +85,7 @@ function melangerOptions($question) {
     ];
 }
 
-// ── Initialiser les questions de la manche courante ─────────────────────────
+// Au début d'une manche, on choisit un thème et 8 questions.
 $manche    = (int)($etat['manche'] ?? 1);
 $mancheKey = (string)$manche;
 
@@ -105,18 +105,17 @@ if (!isset($etat['questions_manches'][$mancheKey])) {
     $questionsSelectionnees = array_slice($questionsFiltrees, 0, $QUESTIONS_PAR_MANCHE);
 
     $etat['questions_manches'][$mancheKey] = array_map('melangerOptions', $questionsSelectionnees);
-    $etat['question_start_time'] = time(); // Démarrer le timer pour la 1ère question
+    $etat['question_start_time'] = time();
     ecrireEtatPartage($etat);
 }
 
-// ── Enregistrer le start_time si question vient de changer (nouveau chargement sans timer) ──
-// Si question_start_time n'existe pas ou correspond à une ancienne question, le créer
+// Sécurité au cas où le timer n'aurait pas encore été lancé.
 if (!isset($etat['question_start_time'])) {
     $etat['question_start_time'] = time();
     ecrireEtatPartage($etat);
 }
 
-// ── Identité du joueur courant ───────────────────────────────────────────────
+// On sait ici si la session correspond au joueur 1 ou au joueur 2.
 $joueur       = ($roomData['joueur1'] === $_SESSION['username']) ? 'joueur1' : 'joueur2';
 $joueurAdv    = ($joueur === 'joueur1') ? 'joueur2' : 'joueur1';
 $nomJoueur    = $roomData[$joueur] ?? 'Joueur';
@@ -131,7 +130,7 @@ $manchesJ = (int)($etat['manches_gagnees_' . ($joueur === 'joueur1' ? 'j1' : 'j2
 $manchesAdv = (int)($etat['manches_gagnees_' . ($joueur === 'joueur1' ? 'j2' : 'j1')] ?? 0);
 $manchesResultats = $etat['manches_resultats'] ?? [];
 
-// ── Question actuelle ────────────────────────────────────────────────────────
+// Question affichée maintenant.
 $questionIndex   = (int)($etat['question_actuelle'] ?? 0);
 $questionsManche = $etat['questions_manches'][$mancheKey] ?? [];
 $totalQuestions  = count($questionsManche);
@@ -141,10 +140,10 @@ if (advanceExpiredQuestionResult($roomId)) {
     exit();
 }
 
-// ── Fin de manche ────────────────────────────────────────────────────────────
+// Quand toutes les questions sont passées, on calcule le gagnant de la manche.
 if ($questionIndex >= $totalQuestions && $totalQuestions > 0) {
 
-    // Recharger l'état le plus récent pour éviter les conflits entre joueurs
+    // On relit l'état récent, car les deux joueurs peuvent arriver ici presque en même temps.
     $etat = lireEtatPartage();
     foreach ($defaultEtat as $k => $v) {
         if (!array_key_exists($k, $etat)) {
@@ -165,24 +164,24 @@ if (!empty($etat['manche_terminee'])) {
     $manchesJ2 = (int)($etat['manches_gagnees_j2'] ?? 0);
     $mancheActuelle = (int)($etat['manche'] ?? 1);
 
-    // Partie terminée
+    // La partie est finie dès qu'un joueur a 2 manches.
     if ($manchesJ1 >= 2 || $manchesJ2 >= 2 || $mancheActuelle > 3) {
         header("Location: score.php");
         exit();
     }
 
-    // Sinon on repart sur le quiz
+    // Sinon, on laisse l'autre joueur revenir sur la bonne page.
     $etat['manche_terminee'] = false;
     ecrireEtatPartage($etat);
 
     header("Location: quiz.php");
     exit();
 }
-        // Verrou logique
+        // Petit verrou pour éviter de compter deux fois la même manche.
         $etat['manche_terminee'] = true;
         ecrireEtatPartage($etat);
 
-        // Relecture immédiate pour être sûr d’avoir la dernière version
+        // On relit une fois après le verrou.
         $etat = lireEtatPartage();
         foreach ($defaultEtat as $k => $v) {
             if (!array_key_exists($k, $etat)) {
@@ -190,13 +189,13 @@ if (!empty($etat['manche_terminee'])) {
             }
         }
 
-        // Si quelqu’un a déjà avancé entre-temps
+        // Si l'autre joueur a déjà avancé, on suit simplement.
         if ((int)($etat['question_actuelle'] ?? 0) < $totalQuestions) {
             header("Location: quiz.php");
             exit();
         }
 
-        // Déterminer le gagnant de la manche
+        // Score final de la manche.
         $etat['manches_resultats'] = $etat['manches_resultats'] ?? [];
         if ($etat['score_joueur1'] > $etat['score_joueur2']) {
             $etat['manches_gagnees_j1']++;
@@ -208,7 +207,7 @@ if (!empty($etat['manche_terminee'])) {
             $etat['manches_resultats'][$mancheKey] = 'egalite';
         }
 
-        // Fin de partie
+        // Fin de partie si un joueur a gagné assez de manches.
         if (
             $etat['manches_gagnees_j1'] >= 2 ||
             $etat['manches_gagnees_j2'] >= 2 ||
@@ -219,7 +218,7 @@ if (!empty($etat['manche_terminee'])) {
             exit();
         }
 
-        // Manche suivante
+        // Préparation de la manche suivante.
         $etat['manche']++;
         $etat['question_actuelle'] = 0;
         $etat['score_joueur1'] = 0;
@@ -264,13 +263,12 @@ $texteBonneReponse = isset($currentQuestion['options'][$indexCorrect])
 $reponseJoueur = $etat['reponses'][$questionIndex][$joueur] ?? '';
 $bonneReponseJoueur = $afficherResultat && $reponseJoueur !== '' && $reponseJoueur === $lettreCorrecte;
 
-// ── Calcul du temps restant RÉEL (résiste aux actualisations) ─────────────────
+// Timer calculé côté serveur pour éviter de tricher avec un simple refresh.
 $TIMER_DUREE     = 30;
 $questionStart   = (int)($etat['question_start_time'] ?? time());
 $tempsEcoule     = time() - $questionStart;
 $tempsRestant    = max(0, $TIMER_DUREE - $tempsEcoule);
-// Si le timer est expiré et que le joueur n'a pas encore répondu → auto-submit côté serveur
-// (géré en JS, mais on passe la valeur réelle au frontend)
+// Si le temps est fini, le formulaire part sans réponse.
 $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
                    isset($etat['reponses'][$questionIndex]['joueur2']);
 ?>
@@ -280,7 +278,7 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quiz Battle – Manche <?= $manche ?></title>
-  <link rel="stylesheet" href="quiz.css"/>
+  <link rel="stylesheet" href="assets/css/quiz.css?v=2"/>
 <style>
   .waiting-msg {
     text-align: center;
@@ -374,6 +372,24 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
   .result-msg.bad {
     color: #fecaca;
   }
+
+  .sound-toggle {
+    min-width: 48px;
+    height: 48px;
+    border: 1px solid rgba(250, 204, 21, 0.45);
+    border-radius: 12px;
+    background: rgba(41, 24, 12, 0.88);
+    color: #facc15;
+    cursor: pointer;
+    font-size: 1.15rem;
+    font-weight: bold;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+  }
+
+  .sound-toggle:hover {
+    background: rgba(255, 247, 237, 0.12);
+  }
+
 </style>
 </head>
 <body>
@@ -390,6 +406,7 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
         <div class="timer-bar"><div class="timer-fill" id="timerBar"></div></div>
         <span id="timer"><?= $afficherResultat ? 'Résultat' : ($dejaRepondu ? 'Répondu ✓' : $tempsRestant . ' s') ?></span>
       </div>
+      <button class="sound-toggle" id="soundToggle" type="button" title="Activer ou couper les effets">🔊</button>
     </header>
 
     <section class="players">
@@ -516,22 +533,91 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
 </div>
 
 <script>
+let soundMuted = localStorage.getItem('quiz_sound_muted') === '1';
+let soundCtx = null;
+let lastTickSecond = null;
+
+function updateSoundButton() {
+  const btn = document.getElementById('soundToggle');
+  if (btn) {
+    btn.textContent = soundMuted ? '🔇' : '🔊';
+  }
+}
+
+function getAudioContext() {
+  soundCtx = soundCtx || new (window.AudioContext || window.webkitAudioContext)();
+  if (soundCtx.state === 'suspended') {
+    soundCtx.resume();
+  }
+  return soundCtx;
+}
+
+function playTone(freq, duration, type = 'sine', volume = 0.05, delay = 0) {
+  if (soundMuted) return;
+
+  const ctx = getAudioContext();
+  const osc = soundCtx.createOscillator();
+  const gain = soundCtx.createGain();
+  const startAt = ctx.currentTime + delay;
+
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.001, startAt);
+  gain.gain.exponentialRampToValueAtTime(volume, startAt + 0.015);
+  gain.gain.exponentialRampToValueAtTime(0.001, startAt + duration);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+
+  osc.start(startAt);
+  osc.stop(startAt + duration + 0.02);
+}
+
+function playSound(name) {
+  if (name === 'select') {
+    playTone(460, 0.06, 'sine', 0.022);
+    playTone(620, 0.07, 'sine', 0.018, 0.05);
+  } else if (name === 'good') {
+    playTone(520, 0.08, 'sine', 0.028);
+    playTone(660, 0.10, 'sine', 0.03, 0.08);
+    playTone(880, 0.12, 'sine', 0.032, 0.17);
+  } else if (name === 'bad') {
+    playTone(260, 0.11, 'sine', 0.026);
+    playTone(210, 0.16, 'sine', 0.022, 0.10);
+  } else if (name === 'tick') {
+    playTone(720, 0.035, 'sine', 0.012);
+  }
+}
+
+document.getElementById('soundToggle')?.addEventListener('click', function() {
+  soundMuted = !soundMuted;
+  localStorage.setItem('quiz_sound_muted', soundMuted ? '1' : '0');
+  updateSoundButton();
+  if (!soundMuted) playSound('select');
+});
+
+updateSoundButton();
+
+<?php if ($afficherResultat): ?>
+window.addEventListener('load', () => {
+  playSound(<?= json_encode($bonneReponseJoueur ? 'good' : 'bad') ?>);
+});
+<?php endif; ?>
+
 <?php if (!$dejaRepondu && !$afficherResultat): ?>
 (function() {
   const TOTAL = 30;
-  // Temps restant RÉEL calculé côté serveur — résiste aux actualisations de page
+  // Valeur envoyée par PHP, donc un refresh ne redonne pas 30 secondes.
   let left = <?= $tempsRestant ?>;
 
   const lbl = document.getElementById('timer');
   const bar = document.getElementById('timerBar');
 
-  // Affichage immédiat de la valeur correcte
   lbl.textContent = left + ' s';
   bar.style.width = (left / TOTAL * 100) + '%';
   bar.style.background = left <= 10 ? '#ef4444' : '#22c55e';
 
   if (left <= 0) {
-    // Déjà expiré au chargement → soumettre immédiatement
     document.getElementById('quizForm').submit();
     return;
   }
@@ -541,6 +627,11 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
     lbl.textContent = left + ' s';
     bar.style.width = (left / TOTAL * 100) + '%';
     bar.style.background = left <= 10 ? '#ef4444' : '#22c55e';
+
+    if (left <= 5 && left > 0 && lastTickSecond !== left) {
+      lastTickSecond = left;
+      playSound('tick');
+    }
 
     if (left <= 0) {
       clearInterval(t);
@@ -570,6 +661,9 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
       .then(data => {
         if (data.error) {
           clearInterval(iv);
+          if (data.error === 'room_missing') {
+            location.href = 'room.php';
+          }
           return;
         }
 
@@ -613,6 +707,7 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
 <?php endif; ?>
 
 function selectAnswer(letter, btn) {
+  playSound('select');
   document.querySelectorAll('.answer-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   document.getElementById('selectedAnswer').value = letter;
@@ -629,5 +724,6 @@ document.getElementById('quizForm')?.addEventListener('submit', function() {
   this.querySelectorAll('button').forEach(b => b.disabled = true);
 });
 </script>
+<script src="assets/js/music.js"></script>
 </body>
 </html>

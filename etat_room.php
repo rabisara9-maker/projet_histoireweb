@@ -1,10 +1,15 @@
 <?php
-// etat_room.php - Retourne l'état de la room en JSON (pour le polling JS)
+// Petite route appelée par JavaScript pour savoir si la room est prête.
 session_start();
 require_once __DIR__ . '/db.php';
 header('Content-Type: application/json');
 
-$roomId         = $_SESSION['room_id'] ?? 1;
+if (!isset($_SESSION['room_id'])) {
+    echo json_encode(['error' => 'no_session']);
+    exit();
+}
+
+$roomId = $_SESSION['room_id'];
 $room = getRoom((int)$roomId);
 
 if ($room) {

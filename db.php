@@ -266,8 +266,16 @@ function advanceExpiredQuestionResult(int $roomId): bool {
 }
 
 function deleteRoomAndGame(int $roomId): void {
-    $stmt = db()->prepare("DELETE FROM rooms WHERE id = ?");
+    $pdo = db();
+    $pdo->beginTransaction();
+
+    $stmt = $pdo->prepare("DELETE FROM games WHERE room_id = ?");
     $stmt->execute([$roomId]);
+
+    $stmt = $pdo->prepare("DELETE FROM rooms WHERE id = ?");
+    $stmt->execute([$roomId]);
+
+    $pdo->commit();
 }
 
 function cleanOldRooms(): void {

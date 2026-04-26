@@ -9,6 +9,13 @@ if (!isset($_SESSION['room_id'])) {
 }
 
 $roomId = (int) $_SESSION['room_id'];
+$room = getRoom($roomId);
+
+if (!$room) {
+    echo json_encode(['error' => 'room_missing']);
+    exit();
+}
+
 $data = getGameState($roomId);
 
 echo json_encode([

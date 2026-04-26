@@ -1,34 +1,24 @@
 <?php
-/*Rôle : collecter les infos du joueur, lui attribuer une room,
-  puis rediriger vers room.php (salle d'attente). */
+// Page d'accueil : on récupère les infos du joueur avant de l'envoyer en salle.
 session_start();
 require_once __DIR__ . '/db.php';
 
 cleanOldRooms();
 
-/* --------------------------------------------------------------------------
-   TRAITEMENT DU FORMULAIRE (méthode POST)
-   S'exécute uniquement quand le joueur soumet ses informations.
-   -------------------------------------------------------------------------- */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!empty($_POST['username'])) {
 
-        // --- Informations du joueur ---
+        // Infos gardées en session pour reconnaître le joueur pendant la partie.
         $_SESSION['username'] = htmlspecialchars(trim($_POST['username']), ENT_QUOTES, 'UTF-8');
         $_SESSION['age']      = !empty($_POST['age']) ? intval($_POST['age']) : null;
-        $_SESSION['language'] = !empty($_POST['language'])
-                                ? htmlspecialchars($_POST['language'], ENT_QUOTES, 'UTF-8')
-                                : 'fr';
 
-        // --- Validation de l'avatar (liste blanche d'emojis autorisés) ---
+        // On accepte seulement les avatars proposés dans le formulaire.
         $avatarsAutorises = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','🗡️','🏹','🔱'];
         $avatar = $_POST['avatar'] ?? '👤';
         $_SESSION['avatar'] = in_array($avatar, $avatarsAutorises) ? $avatar : '👤';
 
-        // --- Attribution d'une room ---
-        // Si un code room est fourni, on tente de rejoindre cette room précise.
-        // Sinon, on cherche une room libre ou on en crée une nouvelle.
+        // Avec un code on rejoint une room précise, sinon on prend une room libre.
         $roomId = null;
         if (!empty($_POST['room_code'])) {
             $roomId = intval($_POST['room_code']);
@@ -49,10 +39,13 @@ function trouverRoomDisponible(): int{
     return findAvailableRoomId();
 }
 
-/* --------------------------------------------------------------------------
-   Liste des avatars disponibles (utilisée dans le formulaire HTML)
-   -------------------------------------------------------------------------- */
+// Avatars affichés dans le choix du joueur.
 $avatarsDisponibles = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','🗡️','🏹','🔱'];
+$currentUsername = $_SESSION['username'] ?? '';
+$currentAge = $_SESSION['age'] ?? '';
+$currentAvatar = $_SESSION['avatar'] ?? '👤';
+$loginError = $_SESSION['login_error'] ?? '';
+unset($_SESSION['login_error']);
 
 ?>
 <!DOCTYPE html>
@@ -62,8 +55,7 @@ $avatarsDisponibles = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','�
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Quiz Battle – Accueil</title>
 
-    <!-- Feuille de styles externe (styles globaux + styles spécifiques login) -->
-    <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="assets/css/style.css?v=2"/>
     <style>
 .avatar-picker {
   display: flex;
@@ -116,6 +108,17 @@ $avatarsDisponibles = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','�
     0 0 18px rgba(250, 204, 21, 0.45),
     0 10px 20px rgba(0,0,0,0.45);
 }
+
+.error-box {
+  background: rgba(127, 29, 29, 0.85);
+  border: 1px solid #fca5a5;
+  border-radius: 12px;
+  color: #fee2e2;
+  font-weight: bold;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  text-align: center;
+}
   </style>
 </head>
 
@@ -123,26 +126,19 @@ $avatarsDisponibles = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','�
 <div class="page">
   <div class="card">
 
-    <!-- ====================================================================
-         HEADER — Titre et accroche de la page
-         ==================================================================== -->
     <header class="card-header">
       <h1>⚔️ Quiz Battle</h1>
       <p>Créez une room ou rejoignez une partie pour affronter un adversaire sur 3 manches.</p>
     </header>
 
+    <?php if ($loginError): ?>
+      <div class="error-box"><?= htmlspecialchars($loginError) ?></div>
+    <?php endif; ?>
 
-    <!-- ====================================================================
-         MAIN — Formulaire de connexion
-         Divisé en 3 sections :
-           1. Informations du joueur (nom, âge, langue, avatar)
-           2. Rejoindre ou créer une room
-           3. Bouton de soumission
-         ==================================================================== -->
+
     <main>
       <form class="form" action="login.php" method="POST">
 
-        <!-- Section 1 : Informations personnelles du joueur -->
         <section class="card-section">
           <div class="form-group">
             <label for="player-name">Nom du joueur</label>
@@ -151,6 +147,7 @@ $avatarsDisponibles = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','�
               id="player-name"
               name="username"
               placeholder="Entrez votre nom"
+              value="<?= htmlspecialchars((string)$currentUsername) ?>"
               required
               maxlength="30"
             />
@@ -163,19 +160,11 @@ $avatarsDisponibles = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','�
               id="player-age"
               name="age"
               placeholder="Votre âge"
+              value="<?= htmlspecialchars((string)$currentAge) ?>"
               min="10"
               max="100"
               required
             />
-          </div>
-
-          <div class="form-group">
-            <label for="language">Langue</label>
-            <select id="language" name="language">
-              <option value="fr">Français</option>
-              <option value="en">English</option>
-              <option value="ar">العربية</option>
-            </select>
           </div>
 
           <div class="form-group">
@@ -188,7 +177,7 @@ $avatarsDisponibles = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','�
                     name="avatar"
                     id="av<?= $index ?>"
                     value="<?= $emoji ?>"
-                    <?= $index === 0 ? 'checked' : '' ?>
+                    <?= $emoji === $currentAvatar ? 'checked' : '' ?>
                   />
                   <label for="av<?= $index ?>"><?= $emoji ?></label>
                 </div>
@@ -197,7 +186,6 @@ $avatarsDisponibles = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','�
           </div>
         </section>
 
-        <!-- Section 2 : Rejoindre ou créer une room -->
         <section class="card-section">
           <div class="form-group">
             <label for="room-code">
@@ -214,7 +202,6 @@ $avatarsDisponibles = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','�
           </div>
         </section>
 
-        <!-- Section 3 : Soumission -->
         <section class="card-section">
           <div class="button-group">
             <button type="submit" class="btn btn-primary">Rejoindre / Créer</button>
@@ -225,25 +212,40 @@ $avatarsDisponibles = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','�
     </main>
 
 
-    <!-- ====================================================================
-         FOOTER — Règles du jeu (information statique)
-         ==================================================================== -->
     <footer>
-      <section class="rules card-section">
+      <section class="rules game-info card-section">
         <h2>Règles du jeu</h2>
-        <ul>
-          <li>2 joueurs par room</li>
-          <li>3 manches par partie</li>
-          <li>8 questions aléatoires par manche</li>
-          <li>30 secondes pour répondre à chaque question</li>
-          <li>Le premier à gagner 2 manches remporte la partie</li>
-        </ul>
+        <p class="section-label">Avant de lancer le duel</p>
+        <p class="rules-intro">
+          Chaque manche choisit un thème historique au hasard. Les deux joueurs répondent aux mêmes questions,
+          et les scores sont mis à jour en même temps pendant la partie.
+        </p>
+        <div class="rules-grid">
+          <div class="rule-card"><span>⚔️ </span><strong>2 joueurs </strong><small>un duel par room</small></div>
+          <div class="rule-card"><span>🏁 </span><strong>3 manches </strong><small>maximum par partie</small></div>
+          <div class="rule-card"><span>📜 </span><strong>8 questions </strong><small>par manche</small></div>
+          <div class="rule-card"><span>⏳ </span><strong>30 secondes </strong><small>pour répondre</small></div>
+          <div class="rule-card"><span>👑 </span><strong>2 manches </strong><small>pour gagner</small></div>
+        </div>
+        <div class="themes-box">
+          <h3>Thèmes possibles</h3>
+          <div class="theme-list">
+            <span>Antiquité</span>
+            <span>Moyen Âge</span>
+            <span>Grandes découvertes</span>
+            <span>Histoire de France</span>
+            <span>Personnages historiques</span>
+            <span>Guerres mondiales</span>
+            <span>Histoire de l'IA</span>
+          </div>
+        </div>
       </section>
 
       <p class="card-footer">Quiz Battle — Projet pédagogique PHP</p>
     </footer>
 
-  </div><!-- /.card -->
-</div><!-- /.page -->
+  </div>
+</div>
+<script src="assets/js/music.js"></script>
 </body>
 </html>

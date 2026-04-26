@@ -430,5 +430,85 @@
     "b": "La Russie",
     "c": "L'Italie",
     "correct": "A"
+  },
+  {
+    "theme": "Histoire de l'IA",
+    "question": "Quel mathématicien a proposé un test pour savoir si une machine peut imiter une conversation humaine ?",
+    "a": "Alan Turing",
+    "b": "Isaac Newton",
+    "c": "Louis Pasteur",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de l'IA",
+    "question": "En quelle année a eu lieu la conférence de Dartmouth, souvent vue comme la naissance officielle de l'intelligence artificielle ?",
+    "a": "1956",
+    "b": "1914",
+    "c": "2001",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de l'IA",
+    "question": "Quel automate du XVIIIe siècle faisait croire qu'une machine savait jouer aux échecs ?",
+    "a": "Le Turc mécanique",
+    "b": "La Pascaline",
+    "c": "Le métier Jacquard",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de l'IA",
+    "question": "Quel programme des années 1960 imitait une conversation avec un psychothérapeute ?",
+    "a": "ELIZA",
+    "b": "Windows",
+    "c": "Photoshop",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de l'IA",
+    "question": "Qui a imaginé l'expérience de pensée de la chambre chinoise ?",
+    "a": "John Searle",
+    "b": "Galilée",
+    "c": "Charlemagne",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de l'IA",
+    "question": "Que critique surtout l'expérience de la chambre chinoise ?",
+    "a": "L'idée qu'une machine comprend forcément ce qu'elle manipule",
+    "b": "L'utilisation de l'électricité",
+    "c": "La construction des ordinateurs portables",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de l'IA",
+    "question": "Comment appelle-t-on les périodes où la recherche en IA a reçu moins d'argent et moins d'attention ?",
+    "a": "Les hivers de l'IA",
+    "b": "Les vacances de l'IA",
+    "c": "Les empires de l'IA",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de l'IA",
+    "question": "Quel type de programme essayait de reproduire le raisonnement d'un spécialiste humain dans un domaine précis ?",
+    "a": "Un système expert",
+    "b": "Un navigateur web",
+    "c": "Un moteur à vapeur",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de l'IA",
+    "question": "Quelle technologie a beaucoup progressé dans les années 2010 grâce à de grandes quantités de données ?",
+    "a": "Le deep learning",
+    "b": "La photographie argentique",
+    "c": "Le télégraphe",
+    "correct": "A"
+  },
+  {
+    "theme": "Histoire de l'IA",
+    "question": "Quel type de modèle est à la base de nombreux outils d'IA générative récents ?",
+    "a": "Le transformer",
+    "b": "La machine à vapeur",
+    "c": "La boussole",
+    "correct": "A"
   }
 ]
