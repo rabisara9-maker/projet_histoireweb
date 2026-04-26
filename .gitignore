@@ -1,16 +1,7 @@
 .env
 *.log
-<<<<<<< HEAD
 
 # Fichiers systeme / editeurs
-.DS_Store
 Thumbs.db
 .vscode/
 *.drawio.crswap
-
-# Dependances eventuelles si le projet evolue
-vendor/
-node_modules/
-=======
-.vscode/
->>>>>>> f49ae0954795e420dfd0f7be9e3f0435c5f6154a
