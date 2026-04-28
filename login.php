@@ -1,32 +1,29 @@
 <?php
-// Page d'accueil : on récupère les infos du joueur avant de l'envoyer en salle.
 session_start();
 require_once __DIR__ . '/db.php';
 
 cleanOldRooms();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
     if (!empty($_POST['username'])) {
 
-        // Infos gardées en session pour reconnaître le joueur pendant la partie.
         $_SESSION['username'] = htmlspecialchars(trim($_POST['username']), ENT_QUOTES, 'UTF-8');
-        $_SESSION['age']      = !empty($_POST['age']) ? intval($_POST['age']) : null;
+        $_SESSION['age'] = !empty($_POST['age']) ? intval($_POST['age']) : null;
 
-        // On accepte seulement les avatars proposés dans le formulaire.
         $avatarsAutorises = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','🗡️','🏹','🔱'];
         $avatar = $_POST['avatar'] ?? '👤';
         $_SESSION['avatar'] = in_array($avatar, $avatarsAutorises) ? $avatar : '👤';
 
-        // Avec un code on rejoint une room précise, sinon on prend une room libre.
         $roomId = null;
         if (!empty($_POST['room_code'])) {
             $roomId = intval($_POST['room_code']);
             if ($roomId <= 0) $roomId = null;
         }
+
         if (!$roomId) {
             $roomId = trouverRoomDisponible();
         }
+
         $_SESSION['room_id'] = $roomId;
 
         header("Location: room.php");
@@ -34,34 +31,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-
-function trouverRoomDisponible(): int{
+function trouverRoomDisponible(): int {
     return findAvailableRoomId();
 }
 
-// Avatars affichés dans le choix du joueur.
 $avatarsDisponibles = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','🗡️','🏹','🔱'];
 $currentUsername = $_SESSION['username'] ?? '';
 $currentAge = $_SESSION['age'] ?? '';
 $currentAvatar = $_SESSION['avatar'] ?? '👤';
 $loginError = $_SESSION['login_error'] ?? '';
 unset($_SESSION['login_error']);
-
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Quiz Battle – Accueil</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Quiz Battle – Accueil</title>
 
-    <link rel="stylesheet" href="assets/css/style.css?v=2"/>
-    <style>
+<link rel="stylesheet" href="assets/css/style.css?v=2"/>
+
+<style>
 .avatar-picker {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 10px;
+  margin-top: 20px;
   justify-content: center;
 }
 
@@ -78,25 +74,16 @@ unset($_SESSION['login_error']);
   justify-content: center;
   font-size: 1.7rem;
   cursor: pointer;
-
   border: 2px solid rgba(250, 204, 21, 0.18);
-
   background: linear-gradient(145deg, #4a2b13, #2c170a);
   color: #fff7ed;
-
-  box-shadow:
-    inset 0 2px 4px rgba(255,255,255,0.06),
-    0 6px 14px rgba(0,0,0,0.35);
-
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.06), 0 6px 14px rgba(0,0,0,0.35);
   transition: 0.2s ease;
 }
 
 .avatar-picker label:hover {
   transform: translateY(-3px) scale(1.05);
   border-color: #facc15;
-  box-shadow:
-    0 0 14px rgba(250, 204, 21, 0.25),
-    0 8px 18px rgba(0,0,0,0.45);
 }
 
 .avatar-picker input[type=radio]:checked + label {
@@ -104,9 +91,6 @@ unset($_SESSION['login_error']);
   background: linear-gradient(145deg, #d97706, #facc15);
   color: #1c1208;
   transform: scale(1.08);
-  box-shadow:
-    0 0 18px rgba(250, 204, 21, 0.45),
-    0 10px 20px rgba(0,0,0,0.45);
 }
 
 .error-box {
@@ -119,7 +103,64 @@ unset($_SESSION['login_error']);
   padding: 14px 16px;
   text-align: center;
 }
-  </style>
+
+.step,
+.rule-step {
+  display: none;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+.step.active,
+.rule-step.active {
+  display: block;
+}
+
+.bubble {
+  display: inline-block;
+  background: #fff7ed;
+  color: #2c170a;
+  border: 2px solid #facc15;
+  border-radius: 24px;
+  padding: 18px 24px;
+  margin-bottom: 25px;
+  font-size: 1.4rem;
+  font-weight: bold;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  position: relative;
+}
+
+.bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -14px;
+  left: 35px;
+  border-width: 14px 14px 0 14px;
+  border-style: solid;
+  border-color: #fff7ed transparent transparent transparent;
+}
+
+.rule-text {
+  color: #fff7ed;
+  font-size: 1.05rem;
+  margin-bottom: 20px;
+}
+
+.theme-list {
+  margin-top: 18px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
 </head>
 
 <body>
@@ -135,16 +176,15 @@ unset($_SESSION['login_error']);
       <div class="error-box"><?= htmlspecialchars($loginError) ?></div>
     <?php endif; ?>
 
-
     <main>
       <form class="form" action="login.php" method="POST">
 
-        <section class="card-section">
+        <section class="step active" id="step1">
+          <div class="bubble">💬 Quel est ton nom ?</div>
+
           <div class="form-group">
-            <label for="player-name">Nom du joueur</label>
             <input
               type="text"
-              id="player-name"
               name="username"
               placeholder="Entrez votre nom"
               value="<?= htmlspecialchars((string)$currentUsername) ?>"
@@ -153,11 +193,17 @@ unset($_SESSION['login_error']);
             />
           </div>
 
+          <button type="button" class="btn btn-primary" onclick="nextStep(2)">
+            Entrer dans l’arène ⚔️
+          </button>
+        </section>
+
+        <section class="step" id="step2">
+          <div class="bubble">🎂 Quel âge as-tu ?</div>
+
           <div class="form-group">
-            <label for="player-age">Âge</label>
             <input
               type="number"
-              id="player-age"
               name="age"
               placeholder="Votre âge"
               value="<?= htmlspecialchars((string)$currentAge) ?>"
@@ -167,77 +213,113 @@ unset($_SESSION['login_error']);
             />
           </div>
 
-          <div class="form-group">
-            <label>Avatar</label>
-            <div class="avatar-picker">
-              <?php foreach ($avatarsDisponibles as $index => $emoji) : ?>
-                <div class="avatar-item">
-                  <input
-                    type="radio"
-                    name="avatar"
-                    id="av<?= $index ?>"
-                    value="<?= $emoji ?>"
-                    <?= $emoji === $currentAvatar ? 'checked' : '' ?>
-                  />
-                  <label for="av<?= $index ?>"><?= $emoji ?></label>
-                </div>
-              <?php endforeach; ?>
-            </div>
-          </div>
+          <button type="button" class="btn btn-primary" onclick="nextStep(3)">
+            Parfait, on continue ➜
+          </button>
         </section>
 
-        <section class="card-section">
+        <section class="step" id="step3">
+          <div class="bubble">🎭 Choisis ton avatar</div>
+
+          <div class="avatar-picker">
+            <?php foreach ($avatarsDisponibles as $index => $emoji) : ?>
+              <div class="avatar-item">
+                <input
+                  type="radio"
+                  name="avatar"
+                  id="av<?= $index ?>"
+                  value="<?= $emoji ?>"
+                  <?= $emoji === $currentAvatar ? 'checked' : '' ?>
+                />
+                <label for="av<?= $index ?>"><?= $emoji ?></label>
+              </div>
+            <?php endforeach; ?>
+          </div>
+
+          <button type="button" class="btn btn-primary" onclick="nextStep(4)">
+            Valider mon avatar 👑
+          </button>
+        </section>
+
+        <section class="step" id="step4">
+          <div class="bubble">🏰 Créer ou rejoindre une room ?</div>
+
           <div class="form-group">
-            <label for="room-code">
-              Code de la room
-              <span class="label-note">(optionnel – laisser vide pour créer)</span>
-            </label>
             <input
               type="number"
-              id="room-code"
               name="room_code"
-              placeholder="Ex : 42"
+              placeholder="Code room optionnel — Ex : 42"
               min="1"
             />
           </div>
-        </section>
 
-        <section class="card-section">
-          <div class="button-group">
-            <button type="submit" class="btn btn-primary">Rejoindre / Créer</button>
-          </div>
+          <button type="submit" class="btn btn-primary">
+            Lancer le duel 🔥
+          </button>
         </section>
 
       </form>
     </main>
 
-
     <footer>
       <section class="rules game-info card-section">
         <h2>Règles du jeu</h2>
         <p class="section-label">Avant de lancer le duel</p>
-        <p class="rules-intro">
-          Chaque manche choisit un thème historique au hasard. Les deux joueurs répondent aux mêmes questions,
-          et les scores sont mis à jour en même temps pendant la partie.
-        </p>
-        <div class="rules-grid">
-          <div class="rule-card"><span>⚔️ </span><strong>2 joueurs </strong><small>un duel par room</small></div>
-          <div class="rule-card"><span>🏁 </span><strong>3 manches </strong><small>maximum par partie</small></div>
-          <div class="rule-card"><span>📜 </span><strong>8 questions </strong><small>par manche</small></div>
-          <div class="rule-card"><span>⏳ </span><strong>30 secondes </strong><small>pour répondre</small></div>
-          <div class="rule-card"><span>👑 </span><strong>2 manches </strong><small>pour gagner</small></div>
+
+        <div class="rule-step active" id="rule1">
+          <div class="bubble">⚔️ Bienvenue dans Quiz Battle !</div>
+          <p class="rule-text">Tu vas affronter un autre joueur dans une room.</p>
+          <button type="button" class="btn btn-primary" onclick="nextRule(2)">
+            Découvrir les règles ➜
+          </button>
         </div>
-        <div class="themes-box">
-          <h3>Thèmes possibles</h3>
-          <div class="theme-list">
-            <span>Antiquité</span>
-            <span>Moyen Âge</span>
-            <span>Grandes découvertes</span>
-            <span>Histoire de France</span>
-            <span>Personnages historiques</span>
-            <span>Guerres mondiales</span>
-            <span>Histoire de l'IA</span>
+
+        <div class="rule-step" id="rule2">
+          <div class="bubble">🏁 3 manches maximum</div>
+          <p class="rule-text">Le premier joueur qui gagne 2 manches remporte la partie.</p>
+          <button type="button" class="btn btn-primary" onclick="nextRule(3)">
+            J’ai compris ✅
+          </button>
+        </div>
+
+        <div class="rule-step" id="rule3">
+          <div class="bubble">📜 8 questions par manche</div>
+          <p class="rule-text">Les deux joueurs répondent aux mêmes questions historiques.</p>
+          <button type="button" class="btn btn-primary" onclick="nextRule(4)">
+            Suite de la mission ➜
+          </button>
+        </div>
+
+        <div class="rule-step" id="rule4">
+          <div class="bubble">⏳ 30 secondes</div>
+          <p class="rule-text">Tu dois répondre rapidement pour marquer des points.</p>
+          <button type="button" class="btn btn-primary" onclick="nextRule(5)">
+            Je suis prêt ⚔️
+          </button>
+        </div>
+
+        <div class="rule-step" id="rule5">
+          <div class="bubble">👑 Prêt pour le duel ?</div>
+          <p class="rule-text">Choisis ton joueur en haut, puis lance la partie !</p>
+
+          <div class="themes-box">
+            <h3>Thèmes possibles</h3>
+            <div class="theme-list">
+              <span>Antiquité</span>
+              <span>Moyen Âge</span>
+              <span>Grandes découvertes</span>
+              <span>Histoire de France</span>
+              <span>Personnages historiques</span>
+              <span>Guerres mondiales</span>
+              <span>Histoire de l'IA</span>
+            </div>
           </div>
+
+          <br>
+
+          <button type="button" class="btn btn-primary" onclick="restartRules()">
+            Revoir l’entraînement 🔁
+          </button>
         </div>
       </section>
 
@@ -246,6 +328,33 @@ unset($_SESSION['login_error']);
 
   </div>
 </div>
+
+<script>
+function nextStep(stepNumber) {
+  document.querySelectorAll('.step').forEach(step => {
+    step.classList.remove('active');
+  });
+
+  document.getElementById('step' + stepNumber).classList.add('active');
+}
+
+function nextRule(ruleNumber) {
+  document.querySelectorAll('.rule-step').forEach(rule => {
+    rule.classList.remove('active');
+  });
+
+  document.getElementById('rule' + ruleNumber).classList.add('active');
+}
+
+function restartRules() {
+  document.querySelectorAll('.rule-step').forEach(rule => {
+    rule.classList.remove('active');
+  });
+
+  document.getElementById('rule1').classList.add('active');
+}
+</script>
+
 <script src="assets/js/music.js"></script>
 </body>
 </html>
