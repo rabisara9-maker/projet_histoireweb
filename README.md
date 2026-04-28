@@ -55,7 +55,7 @@ database.sql
 5. Lancer le site :
 
 ```txt
-http://localhost/projet_histoireweb/login.php
+http://localhost/projet_histoireweb/connexion.php
 ```
 
 ## Base de données
