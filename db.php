@@ -58,7 +58,7 @@ function defaultGameState(): array {
     ];
 }
 
-function normalizeGameState(array $row = null): array {
+function normalizeGameState(?array $row = null): array {
     $default = defaultGameState();
 
     if ($row === null) {
