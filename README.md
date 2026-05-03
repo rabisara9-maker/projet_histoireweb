@@ -24,10 +24,10 @@ Ce projet met en avant la synchronisation des clients en quasi temps-réel grâc
 
 ## Contenu du rendu
 
-- Code source du projet
+- Code source du projet: https://github.com/rabisara9-maker/projet_histoireweb.git
 - Fichier `database.sql`
-- Diagramme d'architecture : `architecture.drawio`
-- Vidéo de démonstration
+- Diagramme d'architecture : voir `architecture.drawio`
+- Vidéo
 
 ## Installation
 
