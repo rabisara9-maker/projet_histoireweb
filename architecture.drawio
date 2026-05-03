@@ -26,19 +26,19 @@
           <mxGeometry height="135" width="155" x="1250" y="100" as="geometry" />
         </mxCell>
         <mxCell id="replay" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#c0842d;fontSize=13;" value="rejouer.php&#xa;supprime ancienne room&#xa;garde pseudo/avatar&#xa;nouvelle room" vertex="1">
-          <mxGeometry height="95" width="175" x="1150" y="356" as="geometry" />
+          <mxGeometry height="95" width="175" x="1160" y="356" as="geometry" />
         </mxCell>
         <mxCell id="quit" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#c0842d;fontSize=13;" value="quitter.php&#xa;supprime room&#xa;détruit session" vertex="1">
           <mxGeometry height="94" width="175" x="1370" y="356" as="geometry" />
         </mxCell>
-        <mxCell id="ajaxQuiz" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontSize=13;" value="etat_quiz.php&#xa;AJAX pendant le quiz&#xa;réponses / question actuelle" vertex="1">
+        <mxCell id="ajaxQuiz" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontSize=13;" value="ajax/etat_quiz.php&#xa;AJAX pendant le quiz&#xa;réponses / question actuelle" vertex="1">
           <mxGeometry height="85" width="140" x="780" y="365" as="geometry" />
         </mxCell>
-        <mxCell id="dbphp" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontSize=13;" value="db.php&#xa;&#xa;Fonctions SQL :&#xa;findAvailableRoomId()&#xa;joinRoom()&#xa;getGameState()&#xa;saveGameState()&#xa;deleteRoomAndGame()" vertex="1">
+        <mxCell id="dbphp" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fef3c7;strokeColor=#d97706;fontSize=13;" value="includes/db.php&#xa;&#xa;Fonctions SQL :&#xa;findAvailableRoomId()&#xa;joinRoom()&#xa;getGameState()&#xa;saveGameState()&#xa;deleteRoomAndGame()" vertex="1">
           <mxGeometry height="150" width="190" x="380" y="600" as="geometry" />
         </mxCell>
         <mxCell id="mysql" parent="1" style="shape=cylinder3d;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#dbeafe;strokeColor=#1d4ed8;fontSize=13;" value="Base MySQL : histoire_quiz&#xa;&#xa;rooms&#xa;- id&#xa;- joueur1 / joueur2&#xa;- avatar1 / avatar2&#xa;- partie_lancee&#xa;&#xa;games&#xa;- room_id&#xa;- manche&#xa;- question_actuelle&#xa;- scores&#xa;- réponses JSON" vertex="1">
-          <mxGeometry height="230" width="165" y="500" as="geometry" />
+          <mxGeometry height="230" width="165" y="542.5" as="geometry" />
         </mxCell>
         <mxCell id="assets" parent="1" style="shape=folder;tabWidth=0;tabHeight=0;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#fce7f3;strokeColor=#be185d;fontSize=13;" value="assets/&#xa;&#xa;css : style du site&#xa;js : musique&#xa;audio : mp3" vertex="1">
           <mxGeometry height="80" width="130" x="950" as="geometry" />
@@ -135,9 +135,9 @@
           <mxGeometry height="45" width="1030" x="230" y="760" as="geometry" />
         </mxCell>
         <mxCell id="koQuiz" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fee2e2;strokeColor=#dc2626;fontSize=13;" value="Accès refusé au quiz&#xa;pas de session&#xa;retour login.php" vertex="1">
-          <mxGeometry height="75" width="180" x="840" y="515" as="geometry" />
+          <mxGeometry height="75" width="180" x="830" y="530" as="geometry" />
         </mxCell>
-        <mxCell id="verify" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#c0842d;fontSize=13;" value="verifier_reponses.php&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Enregistre réponse&lt;br&gt;Calcule si les 2 ont répondu&lt;br&gt;Ajoute les points&lt;/div&gt;" vertex="1">
+        <mxCell id="verify" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffedd5;strokeColor=#c0842d;fontSize=13;" value="ajax/verifier_reponses.php&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Enregistre réponse&lt;br&gt;Calcule si les 2 ont répondu&lt;br&gt;Ajoute les points&lt;/div&gt;" vertex="1">
           <mxGeometry height="130" width="170" x="1169" y="530" as="geometry" />
         </mxCell>
         <mxCell id="c6" edge="1" parent="1" source="verify" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#65a30d;fontSize=12;exitX=0;exitY=0.25;exitDx=0;exitDy=0;" target="questions" value="corrige avec questions.json">
@@ -158,7 +158,7 @@
             <mxPoint x="366" y="590" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="ajaxRoom" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontSize=13;" value="etat_room.php&#xa;AJAX toutes les 2 s&#xa;attente du 2e joueur" vertex="1">
+        <mxCell id="ajaxRoom" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e0f2fe;strokeColor=#0284c7;fontSize=13;" value="ajax/etat_room.php&#xa;AJAX toutes les 2 s&#xa;attente du 2e joueur" vertex="1">
           <mxGeometry height="85" width="175" x="355" y="395" as="geometry" />
         </mxCell>
         <mxCell id="LIWf03O9ICai99cn225J-4" edge="1" parent="1" source="quiz" style="endArrow=block;html=1;strokeWidth=2;strokeColor=#65a30d;fontSize=12;" target="questions" value="lecture questions">
@@ -168,7 +168,7 @@
             <mxPoint x="828" y="620" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="questions" parent="1" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ecfccb;strokeColor=#65a30d;fontSize=13;size=0.38461538461538464;" value="data/questions.json&lt;div&gt;&lt;br&gt;&lt;br&gt;Questions classées par thème :&lt;br&gt;Antiquité&lt;br&gt;Moyen Âge&lt;br&gt;Guerres mondiales&lt;br&gt;Histoire de l&#39;IA...&lt;/div&gt;" vertex="1">
+        <mxCell id="questions" parent="1" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#ecfccb;strokeColor=#65a30d;fontSize=13;size=0.46153846153846156;" value="data/questions.json&lt;div&gt;&lt;br&gt;&lt;br&gt;Questions classées par thème :&lt;br&gt;Antiquité&lt;br&gt;Moyen Âge&lt;br&gt;Guerres mondiales&lt;br&gt;Histoire de l&#39;IA...&lt;/div&gt;" vertex="1">
           <mxGeometry height="130" width="170" x="960" y="630" as="geometry" />
         </mxCell>
       </root>

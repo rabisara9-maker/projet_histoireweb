@@ -1,23 +1,31 @@
 <?php
 session_start();
-require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/db.php';
 
 cleanOldRooms();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!empty($_POST['username'])) {
+    $username = trim($_POST['username'] ?? '');
+    $age = isset($_POST['age']) ? intval($_POST['age']) : null;
 
-        $_SESSION['username'] = htmlspecialchars(trim($_POST['username']), ENT_QUOTES, 'UTF-8');
-        $_SESSION['age'] = !empty($_POST['age']) ? intval($_POST['age']) : null;
+    if ($username === '') {
+        $_SESSION['login_error'] = 'Veuillez entrer votre nom.';
+    } elseif ($age === null || $age < 10 || $age > 100) {
+        $_SESSION['login_error'] = 'Veuillez entrer un age entre 10 et 100 ans.';
+    } else {
+        $_SESSION['username'] = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
+        $_SESSION['age'] = $age;
 
         $avatarsAutorises = ['👤','🧙','⚔️','🏺','👑','🛡️','📜','🗡️','🏹','🔱'];
         $avatar = $_POST['avatar'] ?? '👤';
-        $_SESSION['avatar'] = in_array($avatar, $avatarsAutorises) ? $avatar : '👤';
+        $_SESSION['avatar'] = in_array($avatar, $avatarsAutorises, true) ? $avatar : '👤';
 
         $roomId = null;
         if (!empty($_POST['room_code'])) {
             $roomId = intval($_POST['room_code']);
-            if ($roomId <= 0) $roomId = null;
+            if ($roomId <= 0) {
+                $roomId = null;
+            }
         }
 
         if (!$roomId) {
@@ -48,17 +56,17 @@ unset($_SESSION['login_error']);
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Quiz Battle – Accueil</title>
+<title>Quiz Battle - Accueil</title>
 
 <link rel="stylesheet" href="assets/css/style.css?v=2"/>
 
 <style>
 .avatar-picker {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(5, 56px);
   gap: 12px;
-  margin-top: 20px;
   justify-content: center;
+  margin: 22px auto 26px;
 }
 
 .avatar-picker input[type=radio] {
@@ -66,9 +74,9 @@ unset($_SESSION['login_error']);
 }
 
 .avatar-picker label {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -77,12 +85,12 @@ unset($_SESSION['login_error']);
   border: 2px solid rgba(250, 204, 21, 0.18);
   background: linear-gradient(145deg, #4a2b13, #2c170a);
   color: #fff7ed;
-  box-shadow: inset 0 2px 4px rgba(255,255,255,0.06), 0 6px 14px rgba(0,0,0,0.35);
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.06), 0 5px 12px rgba(0,0,0,0.30);
   transition: 0.2s ease;
 }
 
 .avatar-picker label:hover {
-  transform: translateY(-3px) scale(1.05);
+  transform: translateY(-2px);
   border-color: #facc15;
 }
 
@@ -90,7 +98,8 @@ unset($_SESSION['login_error']);
   border-color: #facc15;
   background: linear-gradient(145deg, #d97706, #facc15);
   color: #1c1208;
-  transform: scale(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.20), 0 8px 18px rgba(0,0,0,0.38);
 }
 
 .error-box {
@@ -102,6 +111,14 @@ unset($_SESSION['login_error']);
   margin-bottom: 20px;
   padding: 14px 16px;
   text-align: center;
+}
+
+.field-error {
+  color: #fecaca;
+  font-size: .9rem;
+  font-weight: bold;
+  margin-top: 10px;
+  min-height: 1.2em;
 }
 
 .step,
@@ -160,6 +177,23 @@ unset($_SESSION['login_error']);
     transform: translateY(0);
   }
 }
+
+@media (max-width: 520px) {
+  .avatar-picker {
+    grid-template-columns: repeat(4, 54px);
+  }
+
+  .avatar-picker label {
+    width: 54px;
+    height: 54px;
+  }
+}
+
+@media (max-width: 360px) {
+  .avatar-picker {
+    grid-template-columns: repeat(3, 54px);
+  }
+}
 </style>
 </head>
 
@@ -177,7 +211,7 @@ unset($_SESSION['login_error']);
     <?php endif; ?>
 
     <main>
-      <form class="form" action="login.php" method="POST">
+      <form class="form" id="loginForm" action="login.php" method="POST" novalidate>
 
         <section class="step active" id="step1">
           <div class="bubble">💬 Quel est ton nom ?</div>
@@ -185,16 +219,17 @@ unset($_SESSION['login_error']);
           <div class="form-group">
             <input
               type="text"
+              id="username"
               name="username"
               placeholder="Entrez votre nom"
               value="<?= htmlspecialchars((string)$currentUsername) ?>"
-              required
               maxlength="30"
             />
+            <p class="field-error" id="usernameError"></p>
           </div>
 
           <button type="button" class="btn btn-primary" onclick="nextStep(2)">
-            Entrer dans l’arène ⚔️
+            Entrer dans l'arène ⚔️
           </button>
         </section>
 
@@ -204,13 +239,14 @@ unset($_SESSION['login_error']);
           <div class="form-group">
             <input
               type="number"
+              id="age"
               name="age"
               placeholder="Votre âge"
               value="<?= htmlspecialchars((string)$currentAge) ?>"
               min="10"
               max="100"
-              required
             />
+            <p class="field-error" id="ageError"></p>
           </div>
 
           <button type="button" class="btn btn-primary" onclick="nextStep(3)">
@@ -228,10 +264,10 @@ unset($_SESSION['login_error']);
                   type="radio"
                   name="avatar"
                   id="av<?= $index ?>"
-                  value="<?= $emoji ?>"
+                  value="<?= htmlspecialchars($emoji) ?>"
                   <?= $emoji === $currentAvatar ? 'checked' : '' ?>
                 />
-                <label for="av<?= $index ?>"><?= $emoji ?></label>
+                <label for="av<?= $index ?>"><?= htmlspecialchars($emoji) ?></label>
               </div>
             <?php endforeach; ?>
           </div>
@@ -248,7 +284,7 @@ unset($_SESSION['login_error']);
             <input
               type="number"
               name="room_code"
-              placeholder="Code room optionnel — Ex : 42"
+              placeholder="Code room optionnel - Ex : 42"
               min="1"
             />
           </div>
@@ -278,7 +314,7 @@ unset($_SESSION['login_error']);
           <div class="bubble">🏁 3 manches maximum</div>
           <p class="rule-text">Le premier joueur qui gagne 2 manches remporte la partie.</p>
           <button type="button" class="btn btn-primary" onclick="nextRule(3)">
-            J’ai compris ✅
+            J'ai compris ✅
           </button>
         </div>
 
@@ -318,24 +354,63 @@ unset($_SESSION['login_error']);
           <br>
 
           <button type="button" class="btn btn-primary" onclick="restartRules()">
-            Revoir l’entraînement 🔁
+            Revoir l'entraînement 🔁
           </button>
         </div>
       </section>
 
-      <p class="card-footer">Quiz Battle — Projet pédagogique PHP</p>
+      <p class="card-footer">Quiz Battle - Projet pédagogique PHP</p>
     </footer>
 
   </div>
 </div>
 
 <script>
-function nextStep(stepNumber) {
+function showStep(stepNumber) {
   document.querySelectorAll('.step').forEach(step => {
     step.classList.remove('active');
   });
 
   document.getElementById('step' + stepNumber).classList.add('active');
+}
+
+function validateStep(stepNumber) {
+  if (stepNumber === 1) {
+    const input = document.getElementById('username');
+    const error = document.getElementById('usernameError');
+
+    if (!input.value.trim()) {
+      error.textContent = 'Entre ton nom avant de continuer.';
+      input.focus();
+      return false;
+    }
+
+    error.textContent = '';
+  }
+
+  if (stepNumber === 2) {
+    const input = document.getElementById('age');
+    const error = document.getElementById('ageError');
+    const age = Number(input.value);
+
+    if (!input.value || age < 10 || age > 100) {
+      error.textContent = 'Entre un âge entre 10 et 100 ans.';
+      input.focus();
+      return false;
+    }
+
+    error.textContent = '';
+  }
+
+  return true;
+}
+
+function nextStep(stepNumber) {
+  if (!validateStep(stepNumber - 1)) {
+    return;
+  }
+
+  showStep(stepNumber);
 }
 
 function nextRule(ruleNumber) {
@@ -353,8 +428,20 @@ function restartRules() {
 
   document.getElementById('rule1').classList.add('active');
 }
+
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+  if (!validateStep(1)) {
+    event.preventDefault();
+    showStep(1);
+    return;
+  }
+
+  if (!validateStep(2)) {
+    event.preventDefault();
+    showStep(2);
+  }
+});
 </script>
 
-<script src="assets/js/music.js"></script>
 </body>
 </html>

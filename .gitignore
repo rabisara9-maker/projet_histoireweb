@@ -1,7 +1,6 @@
 .env
 *.log
 
-# Fichiers systeme / editeurs
 Thumbs.db
 .vscode/
 *.drawio.crswap

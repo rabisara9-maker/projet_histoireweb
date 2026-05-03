@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/../includes/db.php';
 
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -11,11 +11,11 @@ $roomId = (int)($_SESSION['room_id'] ?? 1);
 $roomData = getRoom($roomId);
 
 if (!$roomData || !($roomData['joueur1'] ?? null) || !($roomData['joueur2'] ?? null)) {
-    header("Location: room.php");
+    header("Location: ../room.php");
     exit();
 }
 if ($roomData['joueur1'] !== $_SESSION['username'] && $roomData['joueur2'] !== $_SESSION['username']) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit();
 }
 
@@ -45,7 +45,7 @@ $questionIndex = (int)($etat['question_actuelle'] ?? 0);
 
 if ($questionIndexP !== $questionIndex || !empty($etat['manche_terminee'])) {
     $pdo->commit();
-    header("Location: quiz.php");
+    header("Location: ../quiz.php");
     exit();
 }
 
@@ -97,5 +97,5 @@ if ($j1OK && $j2OK && !isset($etat['score_calcule'][$questionIndex])) {
 saveGameState($roomId, $etat);
 $pdo->commit();
 
-header("Location: quiz.php");
+header("Location: ../quiz.php");
 exit();

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/db.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: login.php"); exit();
@@ -125,7 +125,7 @@ $deuxJoueurs = $joueur1 && $joueur2;
 (function() {
   const deuxJoueurs = <?= json_encode($deuxJoueurs) ?>;
   const iv = setInterval(() => {
-    fetch('etat_room.php')
+    fetch('ajax/etat_room.php')
       .then(r => r.json())
       .then(d => {
         if (d.error === 'no_session') { clearInterval(iv); location.href = 'login.php'; return; }
@@ -136,6 +136,5 @@ $deuxJoueurs = $joueur1 && $joueur2;
   }, 2000);
 })();
 </script>
-<script src="assets/js/music.js"></script>
 </body>
 </html>

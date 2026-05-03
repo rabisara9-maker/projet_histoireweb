@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/db.php';
+require_once __DIR__ . '/includes/game_functions.php';
 
 if (!isset($_SESSION['username'])) {
     header("Location: login.php");
@@ -52,38 +53,7 @@ if (empty($etat)) {
 $questions = json_decode(file_get_contents(__DIR__ . '/data/questions.json'), true);
 $themes    = array_values(array_unique(array_column($questions, 'theme')));
 
-function choisirThemeAleatoire($themes, $themesUtilises = []) {
-    $dispo = array_diff($themes, $themesUtilises);
-    if (empty($dispo)) {
-        $dispo = $themes;
-    }
-    $dispo = array_values($dispo);
-    return $dispo[rand(0, count($dispo) - 1)];
-}
 
-function filtrerQuestionsParTheme($questions, $theme) {
-    return array_values(array_filter($questions, fn($q) => $q['theme'] === $theme));
-}
-
-function melangerOptions($question) {
-    $options = [
-        'A' => $question['a'],
-        'B' => $question['b'],
-        'C' => $question['c']
-    ];
-
-    $cles = array_keys($options);
-    shuffle($cles);
-
-    $optionsMelangees = array_map(fn($k) => $options[$k], $cles);
-    $nouvellePositionCorrecte = array_search('A', $cles) + 1;
-
-    return [
-        'question' => $question['question'],
-        'options'  => $optionsMelangees,
-        'correct'  => $nouvellePositionCorrecte,
-    ];
-}
 
 // Au début d'une manche, on choisit un thème et 8 questions.
 $manche    = (int)($etat['manche'] ?? 1);
@@ -507,7 +477,7 @@ $deuxReponses    = isset($etat['reponses'][$questionIndex]['joueur1']) &&
         </div>
 
       <?php else: ?>
-        <form id="quizForm" action="verifier_reponses.php" method="POST">
+        <form id="quizForm" action="ajax/verifier_reponses.php" method="POST">
           <div class="answers">
             <?php foreach ($currentQuestion['options'] as $i => $option): ?>
               <?php $lettre = chr(65 + $i); ?>
@@ -656,7 +626,7 @@ window.addEventListener('load', () => {
       return;
     }
 
-    fetch('etat_quiz.php?ts=' + Date.now())
+    fetch('ajax/etat_quiz.php?ts=' + Date.now())
       .then(r => r.json())
       .then(data => {
         if (data.error) {
@@ -724,6 +694,5 @@ document.getElementById('quizForm')?.addEventListener('submit', function() {
   this.querySelectorAll('button').forEach(b => b.disabled = true);
 });
 </script>
-<script src="assets/js/music.js"></script>
 </body>
 </html>

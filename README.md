@@ -1,6 +1,8 @@
 # Quiz Battle - Projet Histoire Web
 
-Quiz Battle est un petit jeu de quiz en PHP. Deux joueurs rejoignent une room, répondent aux mêmes questions et gagnent des manches. Le premier joueur qui gagne 2 manches remporte la partie.
+Quiz Battle est un jeu de quiz multijoueur interactif développé en PHP natif (sans framework). Deux joueurs rejoignent une salle d'attente, s'affrontent simultanément sur des séries de questions thématiques, et le premier à gagner 2 manches remporte la partie. 
+
+Ce projet met en avant la synchronisation des clients en quasi temps-réel grâce à des requêtes **AJAX (polling)**, ainsi que la gestion de données complexes via l'utilisation du format **JSON directement dans MySQL**.
 
 ## Membres du groupe
 
@@ -17,15 +19,15 @@ Quiz Battle est un petit jeu de quiz en PHP. Deux joueurs rejoignent une room, r
 - Timer de 30 secondes par question
 - Score partagé entre les deux joueurs
 - Page de résultat avec récapitulatif
-- Musique et petits effets sonores
+- Petits effets sonores pendant le quiz
 - Nettoyage des anciennes rooms
 
 ## Contenu du rendu
 
-- Code source du projet (apres)
+- Code source du projet
 - Fichier `database.sql`
-- Diagramme d'architecture : voir `architecture.drawio`
-- Vidéo(apres)
+- Diagramme d'architecture : `architecture.drawio`
+- Vidéo de démonstration
 
 ## Installation
 
@@ -66,7 +68,7 @@ Le projet utilise une base MySQL appelée :
 histoire_quiz
 ```
 
-Les identifiants sont dans `db.php` :
+Les identifiants sont dans `includes/db.php` :
 
 ```txt
 Utilisateur : root
@@ -76,13 +78,13 @@ Mot de passe : vide
 ## Organisation des fichiers
 
 ```txt
+ajax/      scripts asynchrones pour le temps réel
 assets/
-  audio/   musique du jeu
   css/     feuilles de style
-  js/      scripts communs
 data/
   questions.json
-*.php      pages et traitements du jeu
+includes/  logique métier et connexion BDD
+*.php      pages vues (login, room, quiz...)
 database.sql
 ```
 
