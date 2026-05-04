@@ -33,7 +33,7 @@ if ($roomData['joueur1'] !== $_SESSION['username'] && $roomData['joueur2'] !== $
 }
 
 // Réglages principaux du quiz.
-$QUESTIONS_PAR_MANCHE=2;
+$QUESTIONS_PAR_MANCHE=8;
 $NB_MANCHES=3;
 
 $defaultEtat = defaultGameState();
