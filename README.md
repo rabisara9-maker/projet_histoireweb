@@ -14,8 +14,8 @@ Ce projet met en avant la synchronisation des clients en quasi temps-réel grâc
 - Connexion avec pseudo, âge et avatar
 - Création ou accès à une room avec un code
 - Salle d'attente pour deux joueurs
-- Quiz en 3 manches maximum
-- 8 questions aléatoires par manche
+- Quiz en 3 manches maximum (le premier à gagner 2 manches remporte la partie)
+- **Génération aléatoire :** Le fichier `questions.json` contient plusieurs thèmes avec environ 20 questions chacun. À chaque manche, un thème est sélectionné au hasard, puis 8 questions de ce thème sont tirées aléatoirement pour garantir que chaque partie est unique.
 - Timer de 30 secondes par question
 - Score partagé entre les deux joueurs
 - Page de résultat avec récapitulatif
@@ -27,7 +27,7 @@ Ce projet met en avant la synchronisation des clients en quasi temps-réel grâc
 - Code source du projet: https://github.com/rabisara9-maker/projet_histoireweb.git
 - Fichier `database.sql`
 - Diagramme d'architecture : voir `architecture.drawio`
-- Vidéo
+- Vidéo: https://youtu.be/UmeUY7WYVmY
 
 ## Installation
 

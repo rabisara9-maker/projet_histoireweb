@@ -18,7 +18,7 @@ function lireEtatPartage() {
 
 function ecrireEtatPartage($etat) {
     global $roomId;
-    saveGameState($roomId, $etat);
+    saveGameState($roomId,$etat);
 }
 
 // On vérifie que le joueur appartient bien à cette room.
@@ -33,8 +33,8 @@ if ($roomData['joueur1'] !== $_SESSION['username'] && $roomData['joueur2'] !== $
 }
 
 // Réglages principaux du quiz.
-$QUESTIONS_PAR_MANCHE = 8;
-$NB_MANCHES = 3;
+$QUESTIONS_PAR_MANCHE=2;
+$NB_MANCHES=3;
 
 $defaultEtat = defaultGameState();
 
